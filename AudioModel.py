@@ -1,6 +1,8 @@
 import numpy as np
 from transformers import Wav2Vec2Tokenizer, Wav2Vec2Model
+
 from Constants import Constants
+
 AudioConstants = Constants.AudioConstants
 
 class AudioModel:
