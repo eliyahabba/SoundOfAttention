@@ -13,7 +13,6 @@ class Interface:
         """
         self.audio_model = audio_model
         self.text_model = text_model
-        # Add any additional initialization code here
 
     def display_attention_matrices(self, audio, text):
         """
