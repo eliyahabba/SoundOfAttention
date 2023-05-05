@@ -5,7 +5,7 @@ from datasets import load_dataset
 from transformers import BertTokenizer
 
 from Common.Constants import Constants
-from forced_alignment.Wav2Vec2Aligner import Wav2Vec2Aligner
+from ForcedAlignment.Wav2Vec2Aligner import Wav2Vec2Aligner
 
 TextConstants = Constants.TextConstants
 
