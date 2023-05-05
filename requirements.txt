@@ -3,3 +3,5 @@ datasets
 numpy
 streamlit
 torch
+soundfile
+librosa

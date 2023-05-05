@@ -1,6 +1,6 @@
 from transformers import Wav2Vec2Processor
 
-from Constants import Constants
+from Common.Constants import Constants
 
 AudioConstants = Constants.AudioConstants
 

@@ -1,6 +1,6 @@
 from transformers import BertTokenizer, BertModel
 
-from Constants import Constants
+from Common.Constants import Constants
 
 TextConstants = Constants.TextConstants
 
