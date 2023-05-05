@@ -4,3 +4,6 @@ class Constants:
 
     class TextConstants:
         BERT = 'bert-base-uncased'
+
+    class AlignmentConstants:
+        FS = 16000
