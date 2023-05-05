@@ -1,16 +1,18 @@
-from transformers import Wav2Vec2Processor
-
 from Common.Constants import Constants
+from Common.Resources import StreamlitResources
+from forced_alignment.TextAudioMatcher import TextAudioMatcher
 
 AudioConstants = Constants.AudioConstants
 
+
 class DataPreprocessing:
     def __init__(self):
-        self.processor = Wav2Vec2Processor.from_pretrained(AudioConstants.W2V2)
+        self.resources = StreamlitResources()
+        self.matcher = TextAudioMatcher(self.resources)
 
     def align_audio_text(self, audio_file, transcript_file):
-        # code for aligning audio and text
-        pass
+        matches = self.matcher.match(transcript_file, audio_file)
+        return matches
 
     def aggregate_attention_matrices(self, asr_attention_matrices):
         # code for aggregating ASR attention matrices to NLP token units
