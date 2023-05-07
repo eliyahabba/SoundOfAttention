@@ -1,6 +1,6 @@
 from Common.Constants import Constants
 from Common.Resources import StreamlitResources
-from forced_alignment.TextAudioMatcher import TextAudioMatcher
+from ForcedAlignment.TextAudioMatcher import TextAudioMatcher
 
 AudioConstants = Constants.AudioConstants
 
