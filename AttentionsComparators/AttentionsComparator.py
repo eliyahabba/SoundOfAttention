@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class AttentionComparator(ABC):
+class AttentionsComparator(ABC):
     """
     Abstract class for comparing attention weights.
     """
