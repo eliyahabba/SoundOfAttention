@@ -1,18 +1,18 @@
 from AttentionExtractor.AudioAttentionExtractor import AudioAttentionExtractor
+from AttentionExtractor.TextAttentionExtractor import TextAttentionExtractor
 from AttentionsComparators.AttentionsComparator import AttentionsComparator
 
 
 class AudioTextAttentionMatrixComparator(AttentionsComparator):
-    def __init__(self, model_name1: str, model_name2: str):
-        # Load the BERT model and tokenizer
-        self.model_name1 = model_name1
-        self.model_name2 = model_name2
-        self.audio_attention_extractor_model1 = AudioAttentionExtractor(model_name1)
-        self.audio_attention_extractor_model2 = AudioAttentionExtractor(model_name2)
+    def __init__(self, text_model_name: str, audio_model_name: str):
+        self.text_model_name = text_model_name
+        self.audio_model_name = audio_model_name
+        self.text_attention_extractor_model = TextAttentionExtractor(self.text_model_name)
+        self.audio_attention_extractor_model = AudioAttentionExtractor(self.audio_model_name)
 
-    def create_attention_matrices(self, text, head):
-        model1_attention = self.audio_attention_extractor_model1.extract_attention(text, head)
-        model2_attention = self.audio_attention_extractor_model2.extract_attention(text, head)
+    def create_attention_matrices(self, audio, text, attention_layer, head):
+        model1_attention = self.text_attention_extractor_model.extract_attention(text, attention_layer, head)
+        model2_attention = self.audio_attention_extractor_model.extract_attention(audio, attention_layer, head)
         return model1_attention, model2_attention
 
 

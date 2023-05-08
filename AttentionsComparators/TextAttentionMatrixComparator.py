@@ -7,12 +7,12 @@ TextAttentionExtractorConstants = Constants.TextAttentionExtractorConstants
 
 
 class TextAttentionMatrixComparator(AttentionsComparator):
-    def __init__(self, model_name1: str, model_name2: str):
+    def __init__(self, text_model_name1: str, text_model_name2: str):
         # Load the BERT model and tokenizer
-        self.model_name1 = model_name1
-        self.model_name2 = model_name2
-        self.text_attention_extractor_model1 = TextAttentionExtractor(model_name1)
-        self.text_attention_extractor_model2 = TextAttentionExtractor(model_name2)
+        self.text_model_name1 = text_model_name1
+        self.text_model_name2 = text_model_name2
+        self.text_attention_extractor_model1 = TextAttentionExtractor(text_model_name1)
+        self.text_attention_extractor_model2 = TextAttentionExtractor(text_model_name2)
 
     def create_attention_matrices(self, text, attention_layer, head):
         model1_attention = self.text_attention_extractor_model1.extract_attention(text, attention_layer, head)
