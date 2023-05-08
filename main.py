@@ -1,5 +1,5 @@
-from TextModel import TextModel
-from AudioModel import AudioModel
+from DataModels.TextModel import TextModel
+from DataModels.AudioModel import AudioModel
 from DataPreprocessing import DataPreprocessing
 from CorrelationAnalysis import CorrelationAnalysis
 
