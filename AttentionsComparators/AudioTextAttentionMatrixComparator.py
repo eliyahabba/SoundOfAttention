@@ -1,8 +1,8 @@
-from AttentionComparators.AttentionComparator import AttentionComparator
 from AttentionExtractor.AudioAttentionExtractor import AudioAttentionExtractor
+from AttentionsComparators.AttentionsComparator import AttentionsComparator
 
 
-class AudioTextAttentionMatrixComparator(AttentionComparator):
+class AudioTextAttentionMatrixComparator(AttentionsComparator):
     def __init__(self, model_name1: str, model_name2: str):
         # Load the BERT model and tokenizer
         self.model_name1 = model_name1
