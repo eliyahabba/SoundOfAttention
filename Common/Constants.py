@@ -1,4 +1,11 @@
 class Constants:
+    class AttentionsConstants:
+        LAYER_AXIS = 0
+        HEAD_AXIS = 1
+        LAYER = 'layer'
+        HEAD = 'head'
+        CORRELATION = 'correlation'
+
     class AudioConstants:
         W2V2 = 'facebook/wav2vec2-base-960h'
 
@@ -12,3 +19,5 @@ class Constants:
     class TextAttentionExtractorConstants:
         DEFAULT_ATTENTION_LAYER = 0
         DEFAULT_ATTENTION_HEAD = 0
+        NUM_OF_ATTENTION_LAYERS = 12
+        NUM_OF_ATTENTION_HEADS = 12
