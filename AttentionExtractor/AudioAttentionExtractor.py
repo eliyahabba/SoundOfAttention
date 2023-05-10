@@ -1,4 +1,5 @@
 from AttentionExtractor.AttentionExtractor import AttentionExtractor
+from DataModels.Attentions import Attentions
 from DataModels.AudioModel import AudioModel
 
 
@@ -16,7 +17,7 @@ class AudioAttentionExtractor(AttentionExtractor):
         # use the audio model to run the model
         pass
 
-    def extract_attention(self, text, attention_layer, head):
+    def extract_attention(self, text)-> Attentions:
         outputs = self.run_model(text)
-        attentions = self.get_attention_matrix(model_outputs=outputs, attention_layer=attention_layer, head=head)
+        attentions = self.get_attention_matrix(model_outputs=outputs)
         return attentions
