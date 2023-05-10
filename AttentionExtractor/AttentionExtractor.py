@@ -1,28 +1,28 @@
 from abc import abstractmethod
 
+import numpy as np
+import torch
+
+from DataModels.Attentions import Attentions
+
 
 class AttentionExtractor:
     def __init__(self, model_name: str):
         self.model_name = model_name
 
-    def get_attention_weights(self, model_outputs, attention_layer: int = 0):
-        attentions = model_outputs.attentions[attention_layer]
+    def get_attention_weights(self, model_outputs) -> np.ndarray:
+        attentions = model_outputs.attentions
+        # Concat the tensors across all heads
+        attentions = torch.cat(attentions, dim=0)
+        # Convert the PyTorch tensor to a NumPy array
+        attentions = attentions.detach().numpy()
         return attentions
 
-    def get_first_batch_of_attentions_layers(self, attentions):
-        # Extract the first batch (which is the only one) from the attention matrices for both models
-        attentions_first_batch = attentions.squeeze(0)
-        return attentions_first_batch
-
-    def get_attention_head(self, attentions_of_one_example, head: int):
-        return attentions_of_one_example[head]
-
-    def get_attention_matrix(self, model_outputs, attention_layer, head):
-        attentions = self.get_attention_weights(model_outputs, attention_layer=attention_layer)
-        attentions_first_batch = self.get_first_batch_of_attentions_layers(attentions)
-        attention_head = self.get_attention_head(attentions_first_batch, head)
-        return attention_head
+    def get_attention_matrix(self, model_outputs):
+        attentions_outputs = self.get_attention_weights(model_outputs)
+        attentions = Attentions(attentions_outputs)
+        return attentions
 
     @abstractmethod
-    def extract_attention(self, sample, attention_layer, head):
+    def extract_attention(self, sample):
         pass
