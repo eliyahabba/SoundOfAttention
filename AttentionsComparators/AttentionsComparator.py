@@ -1,14 +1,15 @@
 from abc import ABC
 from typing import Union
 
-import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
 from Common.Constants import Constants
+from CorrelationAnalysis import CorrelationAnalysis
 
 AttentionsConstants = Constants.AttentionsConstants
+
 
 
 class AttentionsComparator(ABC):
@@ -16,23 +17,13 @@ class AttentionsComparator(ABC):
     Abstract class for comparing attention weights.
     """
 
-    def calculate_correlation(self, model1_attention_matrix: np.ndarray, model2_attention_matrix: np.ndarray) -> float:
-        # Calculate the correlation between the two matrices
-        correlation_matrix = np.corrcoef(model1_attention_matrix, model2_attention_matrix)
-        # Get the correlation between the two matrices
-        correlation = correlation_matrix[0, 1]
-        # Normalize the correlation
-        normalized_correlation = (correlation + 1) / 2
-        # truncate the correlation to 2 decimal places
-        normalized_correlation = np.trunc(normalized_correlation * 100) / 100
-        return normalized_correlation
-
-    def compare_attention_matrices(self, model1_attention_matrix, model2_attention_matrix):
+    def compare_attention_matrices(self, model1_attention_matrix, model2_attention_matrix, diagonal_randomization=False):
         results = []
         for layer in range(model1_attention_matrix.shape[AttentionsConstants.LAYER_AXIS]):
             for head in range(model1_attention_matrix.shape[AttentionsConstants.HEAD_AXIS]):
-                correlation = self.calculate_correlation(model1_attention_matrix[layer][head],
-                                                         model2_attention_matrix[layer][head])
+                correlation = CorrelationAnalysis.calculate_correlation(model1_attention_matrix[layer][head],
+                                                                        model2_attention_matrix[layer][head],
+                                                                        diagonal_randomization=diagonal_randomization)
                 results.append({AttentionsConstants.LAYER: layer, AttentionsConstants.HEAD: head,
                                 AttentionsConstants.CORRELATION: correlation})
         results_df = pd.DataFrame(results)
@@ -59,7 +50,7 @@ class AttentionsComparator(ABC):
         print(f'The top {top_k} results with the lowest correlation are:')
         print(correlation_df.tail(top_k).to_string(index=False))
 
-    def display_correlation_stats(self, text_or_audio: Union[str, pd.Series], model_name1: str, model_name2: str,
+    def display_correlation_stats(self, text_or_audio: Union[str, dict], model_name1: str, model_name2: str,
                                   correlation_df: pd.DataFrame, top_k=5):
         self.print_correlation_result(text_or_audio, model_name1, model_name2, correlation_df, top_k)
         self.plot_correlation_result_hitmap(text_or_audio, model_name1, model_name2, correlation_df)
@@ -71,14 +62,12 @@ class AttentionsComparator(ABC):
         correlation_matrix = correlation_df.pivot(index='layer', columns='head', values=AttentionsConstants.CORRELATION)
         ax = sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', vmin=0, vmax=1, ax=ax,
                          annot_kws={"fontsize": 11, "fontweight": 'bold'})
-        ax.set_title(f'Correlation between the attention matrices for the text:\n'
-                     f'{text_or_audio}\n'
-                     f'Using the models:\n'
-                     f'1. {model_name1}\n'
-                     f'2. {model_name2}\n',
-                     fontweight='bold',
-                     loc='center',
-                     )
+        title = f'Correlation between the attention matrices for the text:\n ' \
+                f'{text_or_audio}\n' \
+                f'Using the models: 1.{model_name1}. 2.{model_name2}'
+        # add the title (wrap it  it doesn't get cut off)
+        ax.set_title(title, fontsize=14, fontweight='bold', wrap=True)
+
         ax.set_xlabel('Head')
         ax.set_ylabel('Layer')
         ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
