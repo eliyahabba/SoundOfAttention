@@ -5,7 +5,7 @@ from transformers.modeling_outputs import Wav2Vec2BaseModelOutput
 from Common.Constants import Constants
 from DataModels.AudioModel import AudioModel
 
-AudioConstants = Constants.AudioConstants
+AudioModelProcessorConstants = Constants.AudioModelProcessorConstants
 
 
 class AudioModelProcessor:
@@ -21,7 +21,8 @@ class AudioModelProcessor:
         self.audio_model = AudioModel(model_name, device)
 
     def run(self, audio_values: np.ndarray) -> Wav2Vec2BaseModelOutput:
-        inputs = self.audio_model.processor(audio_values, sampling_rate=16_000, return_tensors="pt", padding=True)
+        inputs = self.audio_model.processor(audio_values, sampling_rate=AudioModelProcessorConstants.SAMPLING_RATE,
+                                            return_tensors="pt", padding=True)
         inputs = inputs.to(self.audio_model.device)
         outputs = self.audio_model.model(inputs.input_values)
         return outputs

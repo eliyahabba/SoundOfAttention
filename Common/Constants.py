@@ -14,7 +14,11 @@ class Constants:
         ROBERTA_BASE = 'roberta-base'
 
     class AlignmentConstants:
-        FS = 16000
+        FS = 16_000
+
+    class AudioModelProcessorConstants:
+        SAMPLING_RATE = 16_000
+
 
     class TextAttentionExtractorConstants:
         DEFAULT_ATTENTION_LAYER = 0
