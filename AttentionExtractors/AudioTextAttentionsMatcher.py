@@ -1,9 +1,12 @@
 from typing import Dict
 
 import numpy as np
+from datasets import load_dataset
 
+from AttentionExtractors.AudioAttentionExtractor import AudioAttentionExtractor
 from AttentionsComparators.AttentionsComparator import AttentionsComparator
 from Common.Resources import BasicResources
+from Common.Utils.ProcessAudioData import ProcessAudioData
 from DataModels.Attentions import Attentions
 from ForcedAlignment.TextAudioMatcher import TextAudioMatcher
 
@@ -21,7 +24,7 @@ class AudioTextAttentionsMatcher(AttentionsComparator):
 
         # group the audio_attention matrix by the matches
         grouped_audio_attention = AudioTextAttentionsMatcher.group_attention_matrix_by_matches(audio_attention,
-                                                                                                       matches)
+                                                                                               matches)
 
         return grouped_audio_attention
 
@@ -43,5 +46,16 @@ class AudioTextAttentionsMatcher(AttentionsComparator):
         audio_attention.attentions = aggregated_attention
         return audio_attention
 
+
 if __name__ == "__main__":
-    pass
+    dataset = load_dataset("patrickvonplaten/librispeech_asr_dummy", 'clean', split='validation')
+    audio = dataset[0]["audio"]
+    text = dataset[0]["text"]
+    audio_model_name = "facebook/wav2vec2-base-960h"
+    audio_key = "array"
+    audio_attention_extractor_model = AudioAttentionExtractor(audio_model_name)
+    audio_values = ProcessAudioData.get_audio_values(audio, audio_key)
+    audio_attention = audio_attention_extractor_model.extract_attention(audio_values)
+
+    # group the audio_attention matrix by the matches
+    aligned_audio_attention = AudioTextAttentionsMatcher.align_attentions(audio, text, audio_attention)
