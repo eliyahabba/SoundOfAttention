@@ -18,6 +18,7 @@ class Constants:
 
     class AudioModelProcessorConstants:
         SAMPLING_RATE = 16_000
+        LIBRISPEECH_AUDIO_KEY = 'array'
 
 
     class TextAttentionExtractorConstants:

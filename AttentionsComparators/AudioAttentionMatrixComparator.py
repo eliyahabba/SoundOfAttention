@@ -5,8 +5,11 @@ from datasets import load_dataset
 
 from AttentionExtractors.AudioAttentionExtractor import AudioAttentionExtractor
 from AttentionsComparators.AttentionsComparator import AttentionsComparator
+from Common.Constants import Constants
 from Common.Utils.ProcessAudioData import ProcessAudioData
 from DataModels.Attentions import Attentions
+
+AudioModelProcessorConstants = Constants.AudioModelProcessorConstants
 
 
 class AudioAttentionMatrixComparator(AttentionsComparator):
@@ -18,7 +21,7 @@ class AudioAttentionMatrixComparator(AttentionsComparator):
         self.audio_attention_extractor_model1 = AudioAttentionExtractor(audio_model_name1)
         self.audio_attention_extractor_model2 = AudioAttentionExtractor(audio_model_name2)
 
-    def create_attention_matrices(self, audio: dict, audio_key: str = "array") -> Tuple[Attentions, Attentions]:
+    def create_attention_matrices(self, audio: dict, audio_key: str = AudioModelProcessorConstants.LIBRISPEECH_AUDIO_KEY) -> Tuple[Attentions, Attentions]:
         audio_values = ProcessAudioData.get_audio_values(audio, audio_key)
         model1_attentions = self.audio_attention_extractor_model1.extract_attention(audio_values)
         model2_attentions = self.audio_attention_extractor_model2.extract_attention(audio_values)
