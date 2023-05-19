@@ -62,5 +62,7 @@ class TextAudioMatcher:
         return {
             'text': mapping['token'],
             'audio': match_audio,
-            'sample_rate': AlignmentConstants.FS
+            'sample_rate': AlignmentConstants.FS,
+            'audio_start': mapping['start'],
+            'audio_end':  mapping['end']
         }
