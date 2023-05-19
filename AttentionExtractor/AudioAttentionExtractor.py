@@ -1,6 +1,10 @@
+import numpy as np
+import torch
+from transformers.modeling_outputs import Wav2Vec2BaseModelOutput
+
 from AttentionExtractor.AttentionExtractor import AttentionExtractor
 from DataModels.Attentions import Attentions
-from DataModels.AudioModel import AudioModel
+from Processors.AudioModelProcessor import AudioModelProcessor
 
 
 class AudioAttentionExtractor(AttentionExtractor):
@@ -8,16 +12,12 @@ class AudioAttentionExtractor(AttentionExtractor):
     This class is responsible for extracting the attention matrices from the audio model.
     """
 
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, device: torch.device = torch.device('cpu')):
         # use super() to call the parent class constructor
         super().__init__(model_name)
-        self.audio_model = AudioModel(model_name)
+        self.audio_model_processor = AudioModelProcessor(model_name, device)
 
-    def run_model(self, text):
-        # use the audio model to run the model
-        pass
-
-    def extract_attention(self, text)-> Attentions:
-        outputs = self.run_model(text)
-        attentions = self.get_attention_matrix(model_outputs=outputs)
+    def extract_attention(self, audio_values: np.ndarray) -> Attentions:
+        outputs = self.audio_model_processor.run(audio_values) | Wav2Vec2BaseModelOutput
+        attentions = self.get_attention_matrix(outputs) | Attentions
         return attentions
