@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import pandas as pd
 import torch
 from datasets import load_dataset
 
@@ -37,7 +38,7 @@ class AudioTextAttentionMatrixComparator(AttentionsComparator):
         aligned_audio_attention = self.align_attentions(audio, text)
         return text_attention, aligned_audio_attention
 
-    def predict_attentions_correlation(self, audio: dict, text: str, display_stats=False):
+    def predict_attentions_correlation(self, audio: dict, text: str, display_stats=False)-> pd.DataFrame:
         model1_attentions, model2_attentions = self.create_attention_matrices(audio, text)
         assert model1_attentions.shape == model2_attentions.shape, \
             "The attention matrices should have the same shape"
