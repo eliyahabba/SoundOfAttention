@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from AttentionExtractor.AttentionExtractor import AttentionExtractor
+from AttentionExtractors.AttentionExtractor import AttentionExtractor
 from DataModels.Attentions import Attentions
 from Processors.AudioModelProcessor import AudioModelProcessor
 
