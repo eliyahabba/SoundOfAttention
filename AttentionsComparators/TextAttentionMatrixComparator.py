@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from AttentionExtractor.TextAttentionExtractor import TextAttentionExtractor
+from AttentionExtractors.TextAttentionExtractor import TextAttentionExtractor
 from AttentionsComparators.AttentionsComparator import AttentionsComparator
 from Common.Constants import Constants
 
