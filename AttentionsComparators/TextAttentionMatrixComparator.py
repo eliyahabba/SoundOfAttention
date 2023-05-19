@@ -28,12 +28,12 @@ class TextAttentionMatrixComparator(AttentionsComparator):
         model2_attentions = self.text_attention_extractor_model2.extract_attention(text)
         return model1_attentions, model2_attentions
 
-    def predict_attentions_correlation(self, text: str, display_stats=False) -> pd.DataFrame:
+    def predict_attentions_correlation(self, text: str, diagonal_randomization, display_stats=False) -> pd.DataFrame:
         model1_attentions, model2_attentions = self.create_attention_matrices(text)
         assert model1_attentions.shape == model2_attentions.shape, \
             "The attention matrices should have the same shape"
 
-        correlation_df = self.compare_attention_matrices(model1_attentions, model2_attentions)
+        correlation_df = self.compare_attention_matrices(model1_attentions, model2_attentions, diagonal_randomization)
         if display_stats:
             self.display_correlation_stats(text, self.text_model_name1, self.text_model_name2, correlation_df)
         return correlation_df
@@ -49,6 +49,9 @@ if __name__ == '__main__':
                             help='The text to extract the attention from')
     arg_parser.add_argument('--display_stats', type=bool, default=True,
                             help='Whether to display the correlation stats')
+    arg_parser.add_argument('--diagonal_randomization', type=bool, default=False,
+                            help='Whether to randomize the diagonal of the attention matrix, to avoid the correlation taken into account the diagonal')
+
     args = arg_parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -56,4 +59,5 @@ if __name__ == '__main__':
     text_attention_matrix_comparator = TextAttentionMatrixComparator(text_model_name1=args.model_name1,
                                                                      text_model_name2=args.model_name2, device=device)
     correlation_df = text_attention_matrix_comparator.predict_attentions_correlation(args.text,
+                                                                                     diagonal_randomization=args.diagonal_randomization,
                                                                                      display_stats=args.display_stats)
