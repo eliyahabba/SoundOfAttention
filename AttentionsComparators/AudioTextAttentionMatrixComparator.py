@@ -4,7 +4,7 @@ import torch
 from datasets import load_dataset
 
 from AttentionExtractors.AudioAttentionExtractor import AudioAttentionExtractor
-from AttentionExtractors.AudioTextAttentionsMatcher import AudioTextAttentionsMatcher
+from AudioTextAttentionsMatcher import AudioTextAttentionsMatcher
 from AttentionExtractors.TextAttentionExtractor import TextAttentionExtractor
 from AttentionsComparators.AttentionsComparator import AttentionsComparator
 from Common.Utils.ProcessAudioData import ProcessAudioData
