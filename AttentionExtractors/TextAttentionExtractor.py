@@ -17,6 +17,6 @@ class TextAttentionExtractor(AttentionExtractor):
         self.text_model_processor = TextModelProcessor(model_name, device)
 
     def extract_attention(self, text) -> Attentions:
-        outputs = self.text_model_processor.run(text) | MaskedLMOutput
-        attentions = self.get_attention_matrix(outputs) | Attentions
+        outputs = self.text_model_processor.run(text)  # MaskedLMOutput
+        attentions = self.get_attention_matrix(outputs)  # Attentions
         return attentions
