@@ -3,10 +3,13 @@ from typing import Dict
 import numpy as np
 from datasets import load_dataset
 
+from Common.Constants import Constants
 from Common.Resources import BasicResources
 from Common.Utils.ProcessAudioData import ProcessAudioData
 from DataModels.Attentions import Attentions
 from ForcedAlignment.TextAudioMatcher import TextAudioMatcher
+
+AudioModelProcessorConstants = Constants.AudioModelProcessorConstants
 
 
 class AudioTextAttentionsMatcher:
@@ -50,12 +53,12 @@ if __name__ == "__main__":
     audio = dataset[0]["audio"]
     text = dataset[0]["text"]
     audio_model_name = "facebook/wav2vec2-base-960h"
-    audio_key = "array"
 
     from AttentionExtractors.AudioAttentionExtractor import AudioAttentionExtractor
 
     audio_attention_extractor_model = AudioAttentionExtractor(audio_model_name)
-    audio_values = ProcessAudioData.get_audio_values(audio, audio_key)
+    audio_values = ProcessAudioData.get_audio_values(audio,
+                                                     audio_key=AudioModelProcessorConstants.LIBRISPEECH_AUDIO_KEY)
     audio_attention = audio_attention_extractor_model.extract_attention(audio_values)
 
     # group the audio_attention matrix by the matches
