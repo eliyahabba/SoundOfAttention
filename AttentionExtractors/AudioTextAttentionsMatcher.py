@@ -3,15 +3,13 @@ from typing import Dict
 import numpy as np
 from datasets import load_dataset
 
-from AttentionExtractors.AudioAttentionExtractor import AudioAttentionExtractor
-from AttentionsComparators.AttentionsComparator import AttentionsComparator
 from Common.Resources import BasicResources
 from Common.Utils.ProcessAudioData import ProcessAudioData
 from DataModels.Attentions import Attentions
 from ForcedAlignment.TextAudioMatcher import TextAudioMatcher
 
 
-class AudioTextAttentionsMatcher(AttentionsComparator):
+class AudioTextAttentionsMatcher:
     @staticmethod
     def align_text_audio(audio: dict, text: str):
         text_audio_matcher = TextAudioMatcher(BasicResources())
@@ -53,6 +51,9 @@ if __name__ == "__main__":
     text = dataset[0]["text"]
     audio_model_name = "facebook/wav2vec2-base-960h"
     audio_key = "array"
+
+    from AttentionExtractors.AudioAttentionExtractor import AudioAttentionExtractor
+
     audio_attention_extractor_model = AudioAttentionExtractor(audio_model_name)
     audio_values = ProcessAudioData.get_audio_values(audio, audio_key)
     audio_attention = audio_attention_extractor_model.extract_attention(audio_values)
