@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-from transformers.modeling_outputs import Wav2Vec2BaseModelOutput
 
 from AttentionExtractor.AttentionExtractor import AttentionExtractor
 from DataModels.Attentions import Attentions
@@ -18,6 +17,6 @@ class AudioAttentionExtractor(AttentionExtractor):
         self.audio_model_processor = AudioModelProcessor(model_name, device)
 
     def extract_attention(self, audio_values: np.ndarray) -> Attentions:
-        outputs = self.audio_model_processor.run(audio_values) | Wav2Vec2BaseModelOutput
-        attentions = self.get_attention_matrix(outputs) | Attentions
+        outputs = self.audio_model_processor.run(audio_values)  # Wav2Vec2BaseModelOutput
+        attentions = self.get_attention_matrix(outputs)  # Attentions
         return attentions
