@@ -1,5 +1,5 @@
 from Common.Constants import Constants
-from Common.Resources import StreamlitResources
+from Common.Resources import BasicResources
 from ForcedAlignment.TextAudioMatcher import TextAudioMatcher
 
 AudioConstants = Constants.AudioConstants
@@ -7,7 +7,7 @@ AudioConstants = Constants.AudioConstants
 
 class DataPreprocessing:
     def __init__(self):
-        self.resources = StreamlitResources()
+        self.resources = BasicResources()
         self.matcher = TextAudioMatcher(self.resources)
 
     def align_audio_text(self, audio_file, transcript_file):
