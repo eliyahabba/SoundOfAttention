@@ -61,7 +61,5 @@ if __name__ == '__main__':
 
     text_attention_matrix_comparator = TextAttentionMatrixComparator(text_model_name1=args.model_name1,
                                                                      text_model_name2=args.model_name2, device=device,
-                                                                     correlation_analysis=CorrelationAnalysis())
-    correlation_df = text_attention_matrix_comparator.predict_attentions_correlation(args.text,
-                                                                                     diagonal_randomization=args.diagonal_randomization,
-                                                                                     display_stats=args.display_stats)
+                                                                     correlation_analysis=CorrelationAnalysis(diagonal_randomization=args.diagonal_randomization))
+    correlation_df = text_attention_matrix_comparator.predict_attentions_correlation(args.text, display_stats=args.display_stats)
