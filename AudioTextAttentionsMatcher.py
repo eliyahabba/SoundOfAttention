@@ -33,6 +33,10 @@ class AudioTextAttentionsMatcher:
     def group_attention_matrix_by_matches(audio_attention, matches):
         aggregated_attention = np.zeros((audio_attention.attentions.shape[0], audio_attention.attentions.shape[1],
                                          len(matches), len(matches)))
+        for i in range(len(matches) - 1):
+            matches[i]['audio_end'] = matches[i + 1]['audio_start']
+        matches[0]['audio_start'] = 0
+        matches[-1]['audio_end'] = audio_attention.shape[-1]
         # Iterate over the index tuples
         for i, match_row in enumerate(matches):
             start_row, end_row = match_row['audio_start'], match_row['audio_end']

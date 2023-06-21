@@ -88,9 +88,9 @@ if __name__ == '__main__':
     data = stats_generator.avg_by_layer_sample(sample)
     data_heads = stats_generator.get_all_data_head_to_head_sample(sample)
 
-    stats_generator = StatsGenerator(model1_dict, model3_dict)
-    data1 = stats_generator.avg_by_layer_sample(sample)
-    data_heads1 = stats_generator.get_all_data_head_to_head_sample(sample)
+    # stats_generator = StatsGenerator(model1_dict, model3_dict)
+    # data1 = stats_generator.avg_by_layer_sample(sample)
+    # data_heads1 = stats_generator.get_all_data_head_to_head_sample(sample)
 
 
     # for i in range(10):
