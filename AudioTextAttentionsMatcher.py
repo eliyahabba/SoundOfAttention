@@ -42,7 +42,7 @@ class AudioTextAttentionsMatcher:
                 chunk = audio_attention.attentions[:, :, start_row:end_row, start_col:end_col]
 
                 # Perform aggregation on the chunk (e.g., sum, mean, max, etc.)
-                aggregated_value = np.median(chunk, axis=(2, 3))
+                aggregated_value = np.sum(chunk, axis=(2, 3)) / chunk.shape[2]
                 aggregated_attention[:, :, i, j] = aggregated_value
         audio_attention.attentions = aggregated_attention
         return audio_attention

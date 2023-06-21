@@ -1,4 +1,3 @@
-from abc import ABC
 from typing import Union
 
 import pandas as pd
@@ -11,19 +10,24 @@ from CorrelationAnalysis import CorrelationAnalysis
 AttentionsConstants = Constants.AttentionsConstants
 
 
-
-class AttentionsComparator(ABC):
+class AttentionsComparator():
     """
     Abstract class for comparing attention weights.
     """
 
-    def compare_attention_matrices(self, model1_attention_matrix, model2_attention_matrix, diagonal_randomization=False):
+    def __init__(self, correlation_analysis: CorrelationAnalysis):
+        self.correlation_analysis = correlation_analysis
+
+    def compare_attention_matrices(self, model1_attention_matrix, model2_attention_matrix):
         results = []
         for layer in range(model1_attention_matrix.shape[AttentionsConstants.LAYER_AXIS]):
             for head in range(model1_attention_matrix.shape[AttentionsConstants.HEAD_AXIS]):
-                correlation = CorrelationAnalysis.calculate_correlation(model1_attention_matrix[layer][head],
-                                                                        model2_attention_matrix[layer][head],
-                                                                        diagonal_randomization=diagonal_randomization)
+                correlation = self.correlation_analysis.forward(model1_attention_matrix[layer][head],
+                                                                model2_attention_matrix[layer][head])
+
+                # correlation = CorrelationAnalysis.calculate_correlation(model1_attention_matrix[layer][head],
+                #                                                         model2_attention_matrix[layer][head],
+                #                                                         diagonal_randomization=diagonal_randomization)
                 results.append({AttentionsConstants.LAYER: layer, AttentionsConstants.HEAD: head,
                                 AttentionsConstants.CORRELATION: correlation})
         results_df = pd.DataFrame(results)

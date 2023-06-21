@@ -8,14 +8,17 @@ import torch
 from AttentionExtractors.TextAttentionExtractor import TextAttentionExtractor
 from AttentionsComparators.AttentionsComparator import AttentionsComparator
 from Common.Constants import Constants
-
+from CorrelationAnalysis import CorrelationAnalysis
 TextConstants = Constants.TextConstants
 TextAttentionExtractorConstants = Constants.TextAttentionExtractorConstants
 AttentionsConstants = Constants.AttentionsConstants
 
 
 class TextAttentionMatrixComparator(AttentionsComparator):
-    def __init__(self, text_model_name1: str, text_model_name2: str, device: torch.device):
+    def __init__(self, text_model_name1: str, text_model_name2: str, device: torch.device,
+                 correlation_analysis: CorrelationAnalysis):
+        super().__init__(correlation_analysis)
+
         # Load the BERT model and tokenizer
         self.text_model_name1 = text_model_name1
         self.text_model_name2 = text_model_name2
@@ -33,7 +36,7 @@ class TextAttentionMatrixComparator(AttentionsComparator):
         assert model1_attentions.shape == model2_attentions.shape, \
             "The attention matrices should have the same shape"
 
-        correlation_df = self.compare_attention_matrices(model1_attentions, model2_attentions, diagonal_randomization)
+        correlation_df = self.compare_attention_matrices(model1_attentions, model2_attentions)
         if display_stats:
             self.display_correlation_stats(text, self.text_model_name1, self.text_model_name2, correlation_df)
         return correlation_df
@@ -57,7 +60,8 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     text_attention_matrix_comparator = TextAttentionMatrixComparator(text_model_name1=args.model_name1,
-                                                                     text_model_name2=args.model_name2, device=device)
+                                                                     text_model_name2=args.model_name2, device=device,
+                                                                     correlation_analysis=CorrelationAnalysis())
     correlation_df = text_attention_matrix_comparator.predict_attentions_correlation(args.text,
                                                                                      diagonal_randomization=args.diagonal_randomization,
                                                                                      display_stats=args.display_stats)

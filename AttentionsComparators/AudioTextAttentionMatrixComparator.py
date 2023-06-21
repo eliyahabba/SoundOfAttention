@@ -11,12 +11,14 @@ from AudioTextAttentionsMatcher import AudioTextAttentionsMatcher
 from Common.Constants import Constants
 from Common.Utils.ProcessAudioData import ProcessAudioData
 from DataModels.Attentions import Attentions
-
+from CorrelationAnalysis import CorrelationAnalysis
 AudioModelProcessorConstants = Constants.AudioModelProcessorConstants
 
 
 class AudioTextAttentionMatrixComparator(AttentionsComparator):
-    def __init__(self, text_model_name: str, audio_model_name: str, device: torch.device) -> None:
+    def __init__(self, text_model_name: str, audio_model_name: str, device: torch.device,
+                 correlation_analysis: CorrelationAnalysis) -> None:
+        super().__init__(correlation_analysis)
         self.text_model_name = text_model_name
         self.audio_model_name = audio_model_name
         self.device = device
@@ -58,7 +60,8 @@ if __name__ == '__main__':
 
     audio_text_attention_matrix_comparator = AudioTextAttentionMatrixComparator(text_model_name="bert-base-uncased",
                                                                                 audio_model_name="facebook/wav2vec2-base-960h",
-                                                                                device=device)
+                                                                                device=device,
+                                                                                correlation_analysis=CorrelationAnalysis())
 
     correlation_df = audio_text_attention_matrix_comparator.predict_attentions_correlation(audio, text,
                                                                                            display_stats=True)

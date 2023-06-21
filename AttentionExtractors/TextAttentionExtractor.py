@@ -1,7 +1,7 @@
 import torch
 from transformers.modeling_outputs import MaskedLMOutput
 
-from AttentionExtractor.AttentionExtractor import AttentionExtractor
+from .AttentionExtractor import AttentionExtractor
 from DataModels import Attentions
 from Processors.TextModelProcessor import TextModelProcessor
 

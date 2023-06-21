@@ -8,12 +8,14 @@ from AttentionsComparators.AttentionsComparator import AttentionsComparator
 from Common.Constants import Constants
 from Common.Utils.ProcessAudioData import ProcessAudioData
 from DataModels.Attentions import Attentions
-
+from CorrelationAnalysis import CorrelationAnalysis
 AudioModelProcessorConstants = Constants.AudioModelProcessorConstants
 
 
 class AudioAttentionMatrixComparator(AttentionsComparator):
-    def __init__(self, audio_model_name1: str, audio_model_name2: str, device: torch.device):
+    def __init__(self, audio_model_name1: str, audio_model_name2: str, device: torch.device,
+                 correlation_analysis: CorrelationAnalysis):
+        super().__init__(correlation_analysis)
         # Load the BERT model and tokenizer
         self.audio_model_name1 = audio_model_name1
         self.audio_model_name2 = audio_model_name2
@@ -49,6 +51,6 @@ if __name__ == '__main__':
     audio_attention_matrix_comparator = AudioAttentionMatrixComparator(
         audio_model_name1="facebook/wav2vec2-base-960h",
         audio_model_name2="facebook/wav2vec2-base-960h",
-        device=device)
+        device=device, correlation_analysis=CorrelationAnalysis())
 
     correlation_df = audio_attention_matrix_comparator.predict_attentions_correlation(audio, display_stats=True)

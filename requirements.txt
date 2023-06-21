@@ -6,3 +6,6 @@ torch
 soundfile
 librosa
 seaborn
+pandas
+matplotlib
+scipy
