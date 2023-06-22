@@ -19,6 +19,7 @@ class Demo:
 
         i = st.number_input("index in dataset", 0, len(self.matcher.dataset))
         sample = self.matcher.dataset[i]
+        sample['text'] = "SLEEPING"
         self._display_sample(sample)
 
     def _display_sample(self, sample):
