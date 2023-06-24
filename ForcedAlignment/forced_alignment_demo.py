@@ -19,7 +19,6 @@ class Demo:
 
         i = st.number_input("index in dataset", 0, len(self.matcher.dataset))
         sample = self.matcher.dataset[i]
-        sample['text'] = "SLEEPING"
         self._display_sample(sample)
 
     def _display_sample(self, sample):
@@ -39,3 +38,8 @@ class Demo:
 if __name__ == '__main__':
     demo = Demo()
     demo.run()
+    
+    # from tqdm import tqdm
+    # matcher = TextAudioMatcher(StreamlitResources())
+    # for sample in tqdm(matcher.dataset):
+    #     matcher.match(sample['text'], sample['audio'])

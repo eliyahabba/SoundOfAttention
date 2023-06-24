@@ -16,7 +16,6 @@ class Wav2Vec2Aligner:
 
     def __call__(self, audio, gt_text):
         gt_text = gt_text.replace(" ", "|")
-        gt_text = "SLEEPING"
         gt_tokens = self.processor.tokenizer.tokenize(gt_text)
         gt_ids = self.processor.tokenizer.convert_tokens_to_ids(gt_tokens)
         assert "".join(self.processor.tokenizer.convert_ids_to_tokens(gt_ids)) == gt_text
@@ -25,7 +24,6 @@ class Wav2Vec2Aligner:
             inputs = inputs.to(device="cuda")
         with torch.no_grad():
             logits = self.model(inputs.input_values).logits
-            logits = logits[:, 55:83, :]
             predicted_ids = torch.argmax(logits, dim=-1)
             predicted_sentences = self.processor.batch_decode(predicted_ids)
         emissions = torch.log_softmax(logits, dim=-1)
@@ -34,7 +32,7 @@ class Wav2Vec2Aligner:
 
         path = self.backtrack(trellis, emission, gt_ids)
 
-        segments = self.merge_repeats(path, gt_text)
+        segments = self.merge_repeats(path)
         return segments
 
     def get_trellis(self, emission, tokens, ):
@@ -95,20 +93,18 @@ class Wav2Vec2Aligner:
             # Score for token staying the same from time frame J-1 to T.
             stayed = trellis[t, j]
             # Score for token changing from C-1 at T-1 to J at T.
-            changed = trellis[t, j - 1]
+            changed = trellis[t, j - 1] if j > 0 else float("-inf")
 
-            skipped_and_changed = trellis[t, j - 2] if j % 2 == 1 and tokens[j // 2] != tokens[j // 2 - 1] \
+            skipped_and_changed = trellis[t, j - 2] if j % 2 == 1 and j > 1 and tokens[j // 2] != tokens[j // 2 - 1] \
                 else float("-inf")
 
             max_prob_source = max(stayed, changed, skipped_and_changed)
 
             # 3. Update the token
-            if max_prob_source == skipped_and_changed:
-                j -= 2
-                print(t)
-                print(j)
-            elif max_prob_source == changed:
+            if max_prob_source == changed and max_prob_source != stayed:
                 j -= 1
+            elif max_prob_source == skipped_and_changed:
+                j -= 2
 
             # 2. Store the path with frame-wise probability.
             token = tokens[j // 2] if j % 2 else self.blank_id
@@ -116,23 +112,20 @@ class Wav2Vec2Aligner:
             # Return token index and time index in non-trellis coordinate.
             path.append(Point(token, t - 1, prob))
 
-        #         if j == 0:
-        #             break
-        # else:
-        #     raise ValueError("Failed to align")
         return path[::-1]
 
     # Merge the labels
-    def merge_repeats(self, path, gt_text):
+    def merge_repeats(self, path):
         i1, i2 = 0, 0
         segments = []
         while i1 < len(path):
-            while i2 < len(path) and path[i1].token_index == path[i2].token_index:
+            while i2 < len(path) and path[i1].token == path[i2].token:
                 i2 += 1
             score = sum(path[k].score for k in range(i1, i2)) / (i2 - i1)
             segments.append(
                 Segment(
-                    gt_text[path[i1].token_index],
+                    path[i1].token,
+                    self.processor.tokenizer.decode(path[i1].token),
                     path[i1].time_index,
                     path[i2 - 1].time_index + 1,
                     score,
@@ -151,6 +144,7 @@ class Point:
 
 @dataclass
 class Segment:
+    token: int
     label: str
     start: int
     end: int
