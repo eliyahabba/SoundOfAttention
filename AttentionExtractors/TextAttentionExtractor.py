@@ -15,8 +15,13 @@ class TextAttentionExtractor(AttentionExtractor):
         # use super() to call the parent class constructor
         super().__init__(model_name)
         self.text_model_processor = TextModelProcessor(model_name, device)
+        self.type = 'text'
 
-    def extract_attention(self, text) -> Attentions:
-        outputs = self.text_model_processor.run(text)  # MaskedLMOutput
+    def extract_attention(self, sample: dict, audio_key) -> Attentions:
+        outputs = self.text_model_processor.run(sample['text'])  # MaskedLMOutput
         attentions = self.get_attention_matrix(outputs)  # Attentions
         return attentions
+
+    def align_attentions(self, sample, attention):
+        # group the audio_attention matrix by the matches
+        return attention

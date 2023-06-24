@@ -1,5 +1,6 @@
-from typing import Union
+from typing import Union, Tuple, Dict
 
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
@@ -10,24 +11,46 @@ from CorrelationAnalysis import CorrelationAnalysis
 AttentionsConstants = Constants.AttentionsConstants
 
 
-class AttentionsComparator():
+class AttentionsComparator:
     """
-    Abstract class for comparing attention weights.
+     Class for comparing attention weights.
     """
-
     def __init__(self, correlation_analysis: CorrelationAnalysis):
         self.correlation_analysis = correlation_analysis
 
-    def compare_attention_matrices(self, model1_attention_matrix, model2_attention_matrix):
+    def compare_matrices(self, arr_matrices1, arr_matrices2) -> np.ndarray:
+        """
+        Calculate correlation between all matrices in arr_matrices1 to all matrices in arr_matrices2.
+
+        Args:
+            arr_matrices1: First array of matrices. Shape [L, H, tokens, tokens]
+            arr_matrices2: Second array of matrices. Shape [L,H, tokens, tokens]
+
+        Returns:
+            nd. Array of correlation between all matrices in arr_matrices1 to all matrices in arr_matrices2.
+            Shape: [L,H,L,H]. Meaning Data[0,0,1,1] is the correlation between arr_matrices1[0,0] to arr_matrices2[1,1]
+        """
+        L = arr_matrices1.shape[AttentionsConstants.LAYER_AXIS]
+        H = arr_matrices2.shape[AttentionsConstants.HEAD_AXIS]
+        data = np.zeros((L, H, L, H))
+
+        for l1 in range(L):
+            for h1 in range(H):
+                for l2 in range(L):
+                    for h2 in range(H):
+                        data[l1, h1, l2, h2] = self.correlation_analysis.forward(arr_matrices1[l1][h1],
+                                                                                 arr_matrices2[l2][h2])
+
+        # df = pd.DataFrame(data)
+        return data
+
+    def compare_head_to_head(self, model1_attention_matrix, model2_attention_matrix):
         results = []
         for layer in range(model1_attention_matrix.shape[AttentionsConstants.LAYER_AXIS]):
             for head in range(model1_attention_matrix.shape[AttentionsConstants.HEAD_AXIS]):
                 correlation = self.correlation_analysis.forward(model1_attention_matrix[layer][head],
                                                                 model2_attention_matrix[layer][head])
 
-                # correlation = CorrelationAnalysis.calculate_correlation(model1_attention_matrix[layer][head],
-                #                                                         model2_attention_matrix[layer][head],
-                #                                                         diagonal_randomization=diagonal_randomization)
                 results.append({AttentionsConstants.LAYER: layer, AttentionsConstants.HEAD: head,
                                 AttentionsConstants.CORRELATION: correlation})
         results_df = pd.DataFrame(results)
