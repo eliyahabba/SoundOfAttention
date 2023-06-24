@@ -41,10 +41,11 @@ class TextAudioMatcher:
         :param segments: The segments of the sample.
         :return: A mapping between the tokens and the segments.
         """
+        segments = [s for s in segments if s.label != "<pad>"]
         tokens_mapping = list()
-        seg_idx = -1
+        seg_idx = 0
         for token in sample_tokens:
-            if not token.startswith("#"):
+            if segments[seg_idx].label == "":
                 seg_idx += 1
             stripped_token = token.replace("#", "")
             segments_for_token = segments[seg_idx: seg_idx + len(stripped_token)]
