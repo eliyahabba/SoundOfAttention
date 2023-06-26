@@ -9,3 +9,4 @@ seaborn
 pandas
 matplotlib
 scipy
+plotly
