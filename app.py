@@ -30,12 +30,19 @@ if __name__ == '__main__':
     st.set_page_config(layout="wide")
 
     dataset, tokenizer, attention_data = get_resources()
+    dataset_indices = pd.DataFrame([dict(id=sample['id'], index_in_dataset=i,
+                                         mean_correlation=attention_data[sample['id']]['mean_correlation'])
+                                    for i, sample in enumerate(dataset)]).\
+        sort_values('mean_correlation', ascending=False).reset_index(drop=True)
 
     st.title("Sound Of Attention")
 
     with st.sidebar:
         st.text("dataset: Librispeech/train")
-        i = st.number_input("select index in dataset", 0, len(dataset)-1)
+        i_sorted = st.number_input("select index in sorted dataset", 0, len(dataset)-1)
+        i = int(dataset_indices.iloc[i_sorted]['index_in_dataset'])
+        st.text(f"id: {dataset_indices.iloc[i_sorted]['id']}\n"
+                f"correlation (cosine): {dataset_indices.iloc[i_sorted]['mean_correlation']:.3f}")
         metric_name = st.selectbox("select metric", ('KL', 'JS', 'Cosine', 'tot_var', 'pearson'), index=2)
 
     stats = get_stats_generator(metric_name)
