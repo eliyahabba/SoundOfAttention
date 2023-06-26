@@ -52,8 +52,11 @@ if __name__ == '__main__':
     st.subheader("Attention Visualization")
     st.markdown("**average by layer**: average attention weights of all heads in a layer")
 
-    avg_layers_cmp = stats.comparator.compare_matrices(attention_data[i]['avg_by_layer_model1'][:, None],
-                                                       attention_data[i]['avg_by_layer_model2'][:, None]).squeeze()
+    avg_by_layer_model1 = attention_data[sample['id']]['avg_by_layer_model1']
+    avg_by_layer_model2 = attention_data[sample['id']]['avg_by_layer_model2']
+
+    avg_layers_cmp = stats.comparator.compare_matrices(avg_by_layer_model1[:, None],
+                                                       avg_by_layer_model2[:, None]).squeeze()
     sorted_indices = np.argsort(avg_layers_cmp, axis=None, )
     sorted_correlations = [dict(bert_layer=idx // avg_layers_cmp.shape[1],
                                 wav2vec2_layer=idx % avg_layers_cmp.shape[1],
@@ -68,22 +71,22 @@ if __name__ == '__main__':
     cols = st.columns((2, 1, 2))
     with cols[0]:
         bert_layer_idx = st.number_input("select layer (bert)", 0,
-                                         attention_data[i]['avg_by_layer_model1'].shape[0] - 1,
+                                         avg_by_layer_model1.shape[0] - 1,
                                          value=indices['bert_layer'])
     with cols[2]:
         wav2vec2_layer_idx = st.number_input("select layer (wav2vec2)", 0,
-                                             attention_data[i]['avg_by_layer_model2'].shape[0] - 1,
+                                             avg_by_layer_model2.shape[0] - 1,
                                              value=indices['wav2vec2_layer'])
 
-    correlation = metric.forward(attention_data[i]['avg_by_layer_model1'][bert_layer_idx],
-                                 attention_data[i]['avg_by_layer_model2'][wav2vec2_layer_idx])
+    correlation = metric.forward(avg_by_layer_model1[bert_layer_idx],
+                                 avg_by_layer_model2[wav2vec2_layer_idx])
     st.text(f"correlation: {correlation:.3f}")
     cols = st.columns(2)
     with cols[0]:
-        st.plotly_chart(px.imshow(attention_data[i]['avg_by_layer_model1'][bert_layer_idx], x=tokens, y=tokens,
+        st.plotly_chart(px.imshow(avg_by_layer_model1[bert_layer_idx], x=tokens, y=tokens,
                                   color_continuous_scale='Blues', title="BERT"))
     with cols[1]:
-        st.plotly_chart(px.imshow(attention_data[i]['avg_by_layer_model2'][wav2vec2_layer_idx], x=tokens, y=tokens,
+        st.plotly_chart(px.imshow(avg_by_layer_model2[wav2vec2_layer_idx], x=tokens, y=tokens,
                                   color_continuous_scale='Blues', title="Wav2Vec2"))
 
     with st.expander("show all heads in layer"):
