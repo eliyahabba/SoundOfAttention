@@ -160,7 +160,7 @@ class StatsGenerator:
 
 if __name__ == '__main__':
     dataset = load_dataset("patrickvonplaten/librispeech_asr_dummy", 'clean', split='validation')
-    sample = dataset[0]
+    sample = dataset[1]
 
     model1_dict = dict(model_name="bert-base-uncased", type='text')
     model2_dict = dict(model_name="facebook/wav2vec2-base-960h", type='audio')

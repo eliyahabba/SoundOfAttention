@@ -54,7 +54,7 @@ class CorrelationAnalysis:
 
         Returns:
             Jensen-Shannon Divergence between the two matrices as a float.
-            Range: [0, inf)
+            Range: (-inf, 0]
             Higher values indicate higher dissimilarity, and lower values indicate higher similarity.
         """
         row_divergences = []
@@ -68,7 +68,7 @@ class CorrelationAnalysis:
         # Average the divergences across all rows
         jensen_shannon_div = np.mean(row_divergences).item()
 
-        return jensen_shannon_div
+        return float(-jensen_shannon_div)
 
     @staticmethod
     def kullback_leibler_divergence(matrix1: np.ndarray, matrix2: np.ndarray) -> float:
@@ -81,7 +81,7 @@ class CorrelationAnalysis:
 
         Returns:
             Kullback-Leibler Divergence between the two matrices as a float.
-            Range: [0, inf)
+            Range: (-inf, 0]
             Higher values indicate higher dissimilarity, and lower values indicate higher similarity.
         """
         row_divergences = []
@@ -93,7 +93,7 @@ class CorrelationAnalysis:
         # Average the divergences across all rows
         kl_divergence = np.mean(row_divergences)
 
-        return float(kl_divergence)
+        return float(-kl_divergence)
 
     @staticmethod
     def total_variation_distance(matrix1: np.ndarray, matrix2: np.ndarray) -> float:
@@ -182,14 +182,16 @@ class CorrelationAnalysis:
             Range: [-1, 1]
             Higher values indicate higher similarity, and lower values indicate higher dissimilarity.
         """
-        # Flatten the matrices into 1D arrays
-        flattened1 = matrix1.flatten()
-        flattened2 = matrix2.flatten()
+        num_rows = matrix1.shape[0]
+        correlations = []
+        for i in range(num_rows):
+            row1 = matrix1[i]
+            row2 = matrix2[i]
+            correlation, _ = pearsonr(row1, row2)
+            correlations.append(correlation)
 
-        # Calculate the Pearson correlation coefficient
-        correlation, _ = pearsonr(flattened1, flattened2)
-
-        return correlation
+        mean_correlation = np.mean(correlations)
+        return float(mean_correlation)
 
     def preprocess(self, matrix1: np.ndarray, matrix2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 
