@@ -1,23 +1,15 @@
 from dataclasses import dataclass
 
-import torch
 from transformers import Wav2Vec2Model, Wav2Vec2Processor
 
 from Common.Constants import Constants
+from DataModels.Model import Model
 
 AudioConstants = Constants.AudioConstants
 
 
 @dataclass
-class AudioModel:
-    """
-        A class representing an audio speech recognition model (e.g., Wav2Vec2)
-
-        Parameters:
-        model_name (str): The name of the Audio model
-    """
-    model_name: str = AudioConstants.W2V2
-    device: torch.device = torch.device('cpu')
+class AudioModel(Model):
 
     def __post_init__(self):
         """
@@ -25,11 +17,9 @@ class AudioModel:
         """
 
         # Initialize the tokenizer and model
-        model_class, processor_class = self._get_audio_model_and_tokenizer(self.model_name)
-        self.model = model_class.from_pretrained(self.model_name, output_attentions=True)
-        self.processor = processor_class.from_pretrained(self.model_name)
-        # Move the model to the provided device
-        self.model.to(self.device)
+        model_class, processor_class = self._get_audio_model_and_tokenizer(self.model_metadata.model_name)
+        self.model = model_class.from_pretrained(self.model_metadata.model_name, output_attentions=True)
+        self.processor = processor_class.from_pretrained(self.model_metadata.model_name)
 
     @staticmethod
     def _get_audio_model_and_tokenizer(model_name_or_path: str) -> (Wav2Vec2Model, Wav2Vec2Processor):
