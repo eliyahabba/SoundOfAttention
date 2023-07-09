@@ -121,35 +121,101 @@ if __name__ == '__main__':
     sample2 = sample1
 
     model1_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False)
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
     model2_metadata = ModelMetadata(model_name="facebook/wav2vec2-base-960h", data_type=DataType.Audio,
-                                    align_tokens_to_bert_tokens=True)
+                                    align_tokens_to_bert_tokens=True, use_cls_and_sep=True)
 
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
     # End
 
-    # Example 2 - Compare text to text
+    # Example 2 - Compare text to text with CLS and SEP and then without
     # Start
     sample1.text = 'Hello, my dog is cute'
     sample2 = Sample(text=dataset[3]["text"], audio=dataset[3]["audio"])
     sample2.text = 'Bey, I am going home'
 
     model1_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False)
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
     model2_metadata = model1_metadata
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons2 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
     head_to_head_correlations_comparisons = stats_generator.get_all_data_head_to_head_sample(attention_model1,
                                                                                              attention_model2)
+
+    model1_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+    model2_metadata = model1_metadata
+    stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
+    attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
+    full_correlations_comparisons3 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
+    head_to_head_correlations_comparisons2 = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+                                                                                             attention_model2)
+
+
     # End
 
     # Example 3 - Compare audio to audio
     # Start
-    sample2.text = 'Hey, your cat is ugly'
+    # sample2.text = 'Hey, your cat is ugly'
+    # stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
+    # attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
+    # full_correlations_comparisons4 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
+    # # End
+
+
+    # Example 4 - Compare text to text with CLS and SEP and then without - Roberta
+    # Start
+    sample1.text = 'Hello, my dog is cute'
+    sample2 = Sample(text=dataset[3]["text"], audio=dataset[3]["audio"])
+    sample2.text = 'Bey, I am going home'
+
+    model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+    model2_metadata = model1_metadata
+    stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
+    attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
+    full_correlations_comparisons2 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
+    head_to_head_correlations_comparisons = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+                                                                                             attention_model2)
+
+    model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+    model2_metadata = model1_metadata
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons3 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
+    head_to_head_correlations_comparisons2 = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+                                                                                             attention_model2)
     # End
+
+
+    # Example 4 - Compare text to text with CLS and SEP and then without - Roberta & Bert
+    # Start
+    sample1.text = 'Hello, my dog is cute'
+    sample2 = Sample(text=dataset[3]["text"], audio=dataset[3]["audio"])
+    sample2.text = 'Hello, my dog is cute'
+
+    model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+    model2_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+    stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
+    attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
+    full_correlations_comparisons2 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
+    head_to_head_correlations_comparisons = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+                                                                                             attention_model2)
+
+    model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+    model2_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
+                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+    stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
+    attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
+    full_correlations_comparisons3 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
+    head_to_head_correlations_comparisons2 = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+                                                                                             attention_model2)
+    # End
+

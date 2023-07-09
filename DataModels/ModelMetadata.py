@@ -16,3 +16,4 @@ class ModelMetadata:
     model_name: str
     data_type: DataType
     align_tokens_to_bert_tokens: bool = False
+    use_cls_and_sep: bool = False
