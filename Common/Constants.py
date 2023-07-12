@@ -20,7 +20,6 @@ class Constants:
         SAMPLING_RATE = 16_000
         LIBRISPEECH_AUDIO_KEY = 'array'
 
-
     class TextAttentionExtractorConstants:
         DEFAULT_ATTENTION_LAYER = 0
         DEFAULT_ATTENTION_HEAD = 0

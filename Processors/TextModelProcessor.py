@@ -12,24 +12,26 @@ class TextModelProcessor:
         A class representing a Text processing model (e.g., BERT)
 
         Parameters:
-            model_name (str): name of the model
-            device (torch.device): device to run the model on
-
+            text_model (TextModel): The text model
     """
 
-    def __init__(self, model_name: str, device: torch.device = torch.device('cpu')):
-        self.text_model = TextModel(model_name, device)
+    def __init__(self, text_model: TextModel):
+        self.text_model = text_model
 
     def tokenize_text(self, text: str) -> torch.Tensor:
         # Tokenize the input text with the text model's tokenizer
-        tokens = self.text_model.tokenizer.tokenize(text)
 
+        # tokens = self.text_model.tokenizer.tokenize(text)
+        input_ids = self.text_model.tokenizer(text, add_special_tokens=self.text_model.model_metadata.use_cls_and_sep)['input_ids']
+        # tokens = self.text_model.tokenizer.convert_ids_to_tokens(input_ids)
         # TODO: check if we need to add special tokens for BERT
         # Add special tokens for BERT
-        # bert_tokens = ['[CLS]'] + bert_tokens + ['[SEP]']
+        # encoded_input = self.text_model.tokenizer.encode_plus("[CLS] " + text + " [SEP]", add_special_tokens=True, return_tensors='pt')
+        # # Convert the input IDs to PyTorch tensors
+        # input_ids = encoded_input['input_ids']
 
         # Convert the tokens to input IDs for the text model
-        input_ids = self.text_model.tokenizer.convert_tokens_to_ids(tokens)
+        # input_ids = self.text_model.tokenizer.convert_tokens_to_ids(tokens)
 
         # Convert the input IDs to PyTorch tensors
         input_ids = torch.tensor(input_ids).unsqueeze(0)
@@ -43,5 +45,5 @@ class TextModelProcessor:
         input_ids = self.tokenize_text(text)
 
         # Get the outputs from the text model
-        outputs = self.text_model.model(input_ids)
+        outputs = self.text_model(input_ids)
         return outputs
