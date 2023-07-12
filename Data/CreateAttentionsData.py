@@ -9,11 +9,11 @@ from DataModels.Sample import Sample
 class CreateAttentionsData:
     @staticmethod
     def create_attentions_data():
-        analysis_generator = get_analysis_generator()
+        analysis_generator = get_analysis_generator(metric_name="Cosine", use_cls_and_sep=True)
         dataset, tokenizer, _ = get_resources()
 
         data = list()
-        for i in tqdm(len(dataset)):
+        for i in tqdm(range(len(dataset))):
             sample1 = Sample(id=dataset[i]["id"], text=dataset[i]["text"], audio=dataset[i]["audio"])
             sample2 = sample1
 
@@ -27,9 +27,9 @@ class CreateAttentionsData:
 
     @staticmethod
     def save_attentions_data(data):
-        pd.to_pickle(data, "attentions.pkl")
+        pd.to_pickle(data, "attentions_with_cls_and_sep.pkl")
 
 
 if __name__ == '__main__':
-    data = createAttentionsData.create_attentions_data()
-    createAttentionsData.save_attentions_data(data)
+    data = CreateAttentionsData.create_attentions_data()
+    CreateAttentionsData.save_attentions_data(data)

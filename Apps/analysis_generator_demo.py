@@ -16,7 +16,7 @@ from DataModels.ModelMetadata import ModelMetadata
 from DataModels.Sample import Sample
 
 AlignmentConstants = Constants.AlignmentConstants
-ATTENTIONS_PATH = Path(__file__).parent / 'Data' / 'attentions.pkl'
+ATTENTIONS_BASE_PATH = Path(__file__).parents[1] / 'Data'
 
 
 @st.cache_resource
@@ -30,15 +30,19 @@ def get_analysis_generator(metric_name: str, use_cls_and_sep: bool = True) -> An
 
 
 @st.cache_resource
-def get_resources() -> Tuple[Dataset, BertTokenizer, dict]:
+def get_resources(use_cls_and_sep: bool = False) -> Tuple[Dataset, BertTokenizer, dict]:
+    attentions_path = ATTENTIONS_BASE_PATH / f"attentions_with_cls_and_sep.pkl" if use_cls_and_sep else ATTENTIONS_BASE_PATH / f"attentions_without_cls_and_sep.pkl"
     return load_dataset("patrickvonplaten/librispeech_asr_dummy", 'clean', split='validation'), \
         BertTokenizer.from_pretrained('bert-base-uncased'), \
-        pd.read_pickle(ATTENTIONS_PATH)
+        pd.read_pickle(attentions_path)
 
 
 def main():
     st.set_page_config(layout="wide")
-    dataset, tokenizer, attention_data = get_resources()
+    with st.sidebar:
+        use_cls_and_sep = st.checkbox("use [CLS] and [SEP]. Currently it's affects only if you show all heads in layer",
+                                      value=False)
+    dataset, tokenizer, attention_data = get_resources(use_cls_and_sep)
     dataset_indices = get_dataset_indices(dataset, attention_data)
 
     st.title("Sound Of Attention")
@@ -46,8 +50,6 @@ def main():
     with st.sidebar:
         i_sorted = show_dataset_info(dataset_indices)
         metric_name = st.selectbox("select metric", ('KL', 'JS', 'Cosine', 'tot_var', 'pearson'), index=2)
-        use_cls_and_sep = st.checkbox("use [CLS] and [SEP]. Currently it's affects only if you show all heads in layer",
-                                      value=True)
     analysis_generator = get_analysis_generator(metric_name, use_cls_and_sep=use_cls_and_sep)
     metric = CorrelationAnalysis(metric_name)
 
