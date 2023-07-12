@@ -21,10 +21,11 @@ class TextAttentionExtractor(AttentionExtractor):
         outputs = self.text_model_processor.run(sample.text)  # MaskedLMOutput
         attentions = self.get_attention_matrix(outputs)  # Attentions
         if self.model_metadata.align_tokens_to_bert_tokens:
-            attentions = self.align_attentions(sample, attentions)
+            attentions = self.align_attentions(sample, attentions,
+                                               use_cls_and_sep=self.text_model_processor.text_model.model_metadata.use_cls_and_sep)
         return attentions
 
-    def align_attentions(self, sample: Sample, attention):
+    def align_attentions(self, sample: Sample, attention: Attentions, use_cls_and_sep: bool):
         # Print a warning message
         warnings.warn("The align_attentions method is not implemented for the text model.")
         return attention

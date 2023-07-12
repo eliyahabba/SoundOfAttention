@@ -1,9 +1,9 @@
 from AttentionExtractors.AttentionExtractor import AttentionExtractor
-from ForcedAlignment.AudioTextAttentionsMatcher import AudioTextAttentionsMatcher
 from Common.Utils.ProcessAudioData import ProcessAudioData
 from DataModels.Attentions import Attentions
 from DataModels.AudioModel import AudioModel
 from DataModels.Sample import Sample
+from ForcedAlignment.AudioTextAttentionsMatcher import AudioTextAttentionsMatcher
 from Processors.AudioModelProcessor import AudioModelProcessor
 
 
@@ -23,11 +23,13 @@ class AudioAttentionExtractor(AttentionExtractor):
         outputs = self.audio_model_processor.run(audio_values)  # Wav2Vec2BaseModelOutput
         attentions = self.get_attention_matrix(outputs)  # Attentions
         if self.model_metadata.align_tokens_to_bert_tokens:
-            attentions = self.align_attentions(sample, attentions)
+            attentions = self.align_attentions(sample, attentions,
+                                               use_cls_and_sep=self.audio_model_processor.audio_model.model_metadata.use_cls_and_sep)
         return attentions
 
-    def align_attentions(self, sample: Sample, attention):
+    def align_attentions(self, sample: Sample, attention: Attentions, use_cls_and_sep: bool):
         # group the audio_attention matrix by the matches
         aligned_audio_attention = AudioTextAttentionsMatcher.align_attentions(sample.audio, sample.text,
-                                                                              attention)
+                                                                              attention,
+                                                                              use_cls_and_sep=use_cls_and_sep)
         return aligned_audio_attention
