@@ -55,12 +55,6 @@ class AnalysisGenerator:
         avg_by_layer_model2 = np.mean(attention_model2.attentions, axis=1)[:, None]
         return avg_by_layer_model1, avg_by_layer_model2
 
-    # def calculate_layerwise_correlation_matrix(self, avg_by_layer_model1: np.ndarray,
-    #                                                            avg_by_layer_model2: np.ndarray) -> np.ndarray:
-    #     correlations_comparisons = self.comparator.compare_attention_matrices(avg_by_layer_model1,
-    #                                                                           avg_by_layer_model2).squeeze()
-    #     return correlations_comparisons
-
     def calculate_layerwise_correlation_averages(self, attention_model1: Attentions, attention_model2: Attentions,
                                                  display: bool = True) -> np.ndarray:
         """
@@ -130,7 +124,8 @@ if __name__ == '__main__':
 
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
-    full_correlations_comparisons = analysis_generator.get_correlations_of_attentions(attention_model1, attention_model2)
+    full_correlations_comparisons = analysis_generator.get_correlations_of_attentions(attention_model1,
+                                                                                      attention_model2)
     VisualizerAttentionsResults.plot_correlation_of_attentions(sample=sample1,
                                                                model_name1=model1_metadata.model_name,
                                                                model_name2=model2_metadata.model_name,
@@ -150,9 +145,10 @@ if __name__ == '__main__':
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons2_with_cls = analysis_generator.get_correlations_of_attentions(attention_model1,
-                                                                                             attention_model2)
-    head_to_head_correlations_comparisons_with_cls = analysis_generator.get_all_data_head_to_head_sample(attention_model1,
-                                                                                                      attention_model2)
+                                                                                                attention_model2)
+    head_to_head_correlations_comparisons_with_cls = analysis_generator.get_all_data_head_to_head_sample(
+        attention_model1,
+        attention_model2)
     VisualizerAttentionsResults.plot_correlation_of_attentions_by_comparing_head_to_head(sample=sample1,
                                                                                          model_name1=model1_metadata.model_name,
                                                                                          model_name2=model2_metadata.model_name,
@@ -164,7 +160,7 @@ if __name__ == '__main__':
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons2_without_cls = analysis_generator.get_correlations_of_attentions(attention_model1,
-                                                                                                attention_model2)
+                                                                                                   attention_model2)
     head_to_head_correlations_comparisons2_without_cls = analysis_generator.get_all_data_head_to_head_sample(
         attention_model1,
         attention_model2)
@@ -195,9 +191,10 @@ if __name__ == '__main__':
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons3_with_cls = analysis_generator.get_correlations_of_attentions(attention_model1,
-                                                                                             attention_model2)
-    head_to_head_correlations_comparisons3_with_cls = analysis_generator.get_all_data_head_to_head_sample(attention_model1,
-                                                                                                       attention_model2)
+                                                                                                attention_model2)
+    head_to_head_correlations_comparisons3_with_cls = analysis_generator.get_all_data_head_to_head_sample(
+        attention_model1,
+        attention_model2)
 
     model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
@@ -205,7 +202,7 @@ if __name__ == '__main__':
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons3_without_cls = analysis_generator.get_correlations_of_attentions(attention_model1,
-                                                                                                attention_model2)
+                                                                                                   attention_model2)
     head_to_head_correlations_comparisons3_without_cls = analysis_generator.get_all_data_head_to_head_sample(
         attention_model1,
         attention_model2)
@@ -224,9 +221,10 @@ if __name__ == '__main__':
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons4_with_cls = analysis_generator.get_correlations_of_attentions(attention_model1,
-                                                                                             attention_model2)
-    head_to_head_correlations_comparisons4_with_cls = analysis_generator.get_all_data_head_to_head_sample(attention_model1,
-                                                                                                       attention_model2)
+                                                                                                attention_model2)
+    head_to_head_correlations_comparisons4_with_cls = analysis_generator.get_all_data_head_to_head_sample(
+        attention_model1,
+        attention_model2)
 
     model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
@@ -235,7 +233,7 @@ if __name__ == '__main__':
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons4_without_cls = analysis_generator.get_correlations_of_attentions(attention_model1,
-                                                                                                attention_model2)
+                                                                                                   attention_model2)
     head_to_head_correlations_comparisons4_without_cls = analysis_generator.get_all_data_head_to_head_sample(
         attention_model1,
         attention_model2)
