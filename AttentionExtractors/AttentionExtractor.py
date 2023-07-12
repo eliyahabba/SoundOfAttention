@@ -45,5 +45,5 @@ class AttentionExtractor:
         pass
 
     @abstractmethod
-    def align_attentions(self, sample, attention) -> Attentions:
+    def align_attentions(self, sample: Sample, attention: Attentions, use_cls_and_sep: bool) -> Attentions:
         pass

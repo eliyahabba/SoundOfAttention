@@ -16,6 +16,7 @@ from DataModels.Sample import Sample
 from Visualizers.VisualizerAttentionsResults import VisualizerAttentionsResults
 
 DEFAULT_AUDIO_KEY = Constants.AudioModelProcessorConstants.LIBRISPEECH_AUDIO_KEY
+DISPLAY = True
 
 
 class AnalysisGenerator:
@@ -68,51 +69,35 @@ class AnalysisGenerator:
                 correlations_comparisons=correlations_comparisons)
         return correlations_comparisons
 
-    def get_correlations_of_attentions(self, attention_model1: Attentions, attention_model2: Attentions,
-                                       display: bool = True) -> np.ndarray:
+    def get_correlations_of_attentions(self, attention_model1: Attentions, attention_model2: Attentions) -> np.ndarray:
         """
         gets the whole data is possible, meaning Layers X Heads X Layers X Heads of correlations.
         If display = True, then show (Layers * Heads) X (Layers * Heads) matrix.
 
         :param attention_model1: Attention model of sample1.
         :param attention_model2: Attention model of sample2.
-        :param display: Whether to display or just return the data.
 
         :return: correlation matrix of shape (L,H,L,H)
         """
 
         full_correlations_comparisons = self.comparator.compare_attention_matrices(attention_model1, attention_model2)
-
-        if display:
-            VisualizerAttentionsResults.plot_correlation_of_attentions(sample=sample1,
-                                                                       model_name1=self.extractor1.model_metadata.model_name,
-                                                                       model_name2=self.extractor2.model_metadata.model_name,
-                                                                       correlations_comparisons=full_correlations_comparisons)
-            VisualizerAttentionsResults.plot_histogram_of_layers_and_heads(full_correlations_comparisons)
-
         return full_correlations_comparisons
 
     def get_all_data_head_to_head_sample(self, attention_model1: Attentions,
-                                         attention_model2: Attentions, display: bool = True) -> pd.DataFrame:
-
+                                         attention_model2: Attentions) -> pd.DataFrame:
         """
         Gets the data of a sample of a shape (L,H,L,H)
         :param attention_model1: Attention model of sample1.
         :param attention_model2: Attention model of sample2.
-        :param display: Whether to display or just return the data.
         :return: correlation matrix of shape (L,H,L,H)
         """
 
         head_to_head_correlations_comparisons = self.comparator.compare_head_to_head(attention_model1, attention_model2)
-        if display:
-            VisualizerAttentionsResults.plot_correlation_of_attentions_by_comparing_head_to_head(sample=sample1,
-                                                                                                 model_name1=self.extractor1.model_metadata.model_name,
-                                                                                                 model_name2=self.extractor2.model_metadata.model_name,
-                                                                                                 correlation_df=head_to_head_correlations_comparisons)
         return head_to_head_correlations_comparisons
 
 
 if __name__ == '__main__':
+    display = DISPLAY
     dataset = load_dataset("patrickvonplaten/librispeech_asr_dummy", 'clean', split='validation')
 
     # Example 1 - Compare text to audio
@@ -128,6 +113,11 @@ if __name__ == '__main__':
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
     full_correlations_comparisons = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
+    VisualizerAttentionsResults.plot_correlation_of_attentions(sample=sample1,
+                                                               model_name1=model1_metadata.model_name,
+                                                               model_name2=model2_metadata.model_name,
+                                                               correlations_comparisons=full_correlations_comparisons)
+    VisualizerAttentionsResults.plot_histogram_of_layers_and_heads(full_correlations_comparisons)
     # End
 
     # Example 2 - Compare text to text with CLS and SEP and then without
@@ -141,19 +131,29 @@ if __name__ == '__main__':
     model2_metadata = model1_metadata
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
-    full_correlations_comparisons2 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
-    head_to_head_correlations_comparisons = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+    full_correlations_comparisons2_with_cls = stats_generator.get_correlations_of_attentions(attention_model1,
                                                                                              attention_model2)
+    head_to_head_correlations_comparisons_with_cls = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+                                                                                                      attention_model2)
+    VisualizerAttentionsResults.plot_correlation_of_attentions_by_comparing_head_to_head(sample=sample1,
+                                                                                         model_name1=model1_metadata.model_name,
+                                                                                         model_name2=model2_metadata.model_name,
+                                                                                         correlation_df=head_to_head_correlations_comparisons_with_cls)
 
     model1_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
     model2_metadata = model1_metadata
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
-    full_correlations_comparisons3 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
-    head_to_head_correlations_comparisons2 = stats_generator.get_all_data_head_to_head_sample(attention_model1,
-                                                                                             attention_model2)
-
+    full_correlations_comparisons2_without_cls = stats_generator.get_correlations_of_attentions(attention_model1,
+                                                                                                attention_model2)
+    head_to_head_correlations_comparisons2_without_cls = stats_generator.get_all_data_head_to_head_sample(
+        attention_model1,
+        attention_model2)
+    VisualizerAttentionsResults.plot_correlation_of_attentions_by_comparing_head_to_head(sample=sample1,
+                                                                                         model_name1=model1_metadata.model_name,
+                                                                                         model_name2=model2_metadata.model_name,
+                                                                                         correlation_df=head_to_head_correlations_comparisons2_without_cls)
 
     # End
 
@@ -164,7 +164,6 @@ if __name__ == '__main__':
     # attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
     # full_correlations_comparisons4 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
     # # End
-
 
     # Example 4 - Compare text to text with CLS and SEP and then without - Roberta
     # Start
@@ -177,20 +176,22 @@ if __name__ == '__main__':
     model2_metadata = model1_metadata
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
-    full_correlations_comparisons2 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
-    head_to_head_correlations_comparisons = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+    full_correlations_comparisons3_with_cls = stats_generator.get_correlations_of_attentions(attention_model1,
                                                                                              attention_model2)
+    head_to_head_correlations_comparisons3_with_cls = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+                                                                                                       attention_model2)
 
     model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
     model2_metadata = model1_metadata
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
-    full_correlations_comparisons3 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
-    head_to_head_correlations_comparisons2 = stats_generator.get_all_data_head_to_head_sample(attention_model1,
-                                                                                             attention_model2)
+    full_correlations_comparisons3_without_cls = stats_generator.get_correlations_of_attentions(attention_model1,
+                                                                                                attention_model2)
+    head_to_head_correlations_comparisons3_without_cls = stats_generator.get_all_data_head_to_head_sample(
+        attention_model1,
+        attention_model2)
     # End
-
 
     # Example 4 - Compare text to text with CLS and SEP and then without - Roberta & Bert
     # Start
@@ -204,9 +205,10 @@ if __name__ == '__main__':
                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
-    full_correlations_comparisons2 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
-    head_to_head_correlations_comparisons = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+    full_correlations_comparisons4_with_cls = stats_generator.get_correlations_of_attentions(attention_model1,
                                                                                              attention_model2)
+    head_to_head_correlations_comparisons4_with_cls = stats_generator.get_all_data_head_to_head_sample(attention_model1,
+                                                                                                       attention_model2)
 
     model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
@@ -214,8 +216,9 @@ if __name__ == '__main__':
                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
     stats_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = stats_generator.get_attentions(sample1, sample2)
-    full_correlations_comparisons3 = stats_generator.get_correlations_of_attentions(attention_model1, attention_model2)
-    head_to_head_correlations_comparisons2 = stats_generator.get_all_data_head_to_head_sample(attention_model1,
-                                                                                             attention_model2)
+    full_correlations_comparisons4_without_cls = stats_generator.get_correlations_of_attentions(attention_model1,
+                                                                                                attention_model2)
+    head_to_head_correlations_comparisons4_without_cls = stats_generator.get_all_data_head_to_head_sample(
+        attention_model1,
+        attention_model2)
     # End
-

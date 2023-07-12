@@ -20,20 +20,20 @@ class AudioTextAttentionsMatcher:
         return matches
 
     @staticmethod
-    def align_attentions(audio: Dict[str, any], text: str, audio_attention: Attentions, cls_sep: bool = False) -> Attentions:
+    def align_attentions(audio: Dict[str, any], text: str, audio_attention: Attentions, use_cls_and_sep: bool = False) -> Attentions:
         matches = AudioTextAttentionsMatcher.align_text_audio(audio, text)
 
         # group the audio_attention matrix by the matches
         grouped_audio_attention = AudioTextAttentionsMatcher.group_attention_matrix_by_matches(audio_attention,
-                                                                                               matches, cls_sep=cls_sep)
+                                                                                               matches, use_cls_and_sep=use_cls_and_sep)
 
         return grouped_audio_attention
 
     @staticmethod
-    def group_attention_matrix_by_matches(audio_attention, matches, cls_sep: bool = False):
+    def group_attention_matrix_by_matches(audio_attention, matches, use_cls_and_sep: bool = False):
         for i in range(len(matches) - 1):
             matches[i]['audio_end'] = matches[i + 1]['audio_start']
-        if not cls_sep:
+        if not use_cls_and_sep:
             matches[0]['audio_start'] = 0
             matches[-1]['audio_end'] = audio_attention.shape[-1]
         else:
