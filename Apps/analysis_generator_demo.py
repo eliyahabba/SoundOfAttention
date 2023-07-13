@@ -62,18 +62,20 @@ def main():
 
 
 def get_dataset_indices(dataset: Dataset, attention_data: dict) -> pd.DataFrame:
-    dataset_indices = pd.DataFrame([dict(id=sample['id'], index_in_dataset=i,
-                                         mean_correlation=attention_data[sample['id']]['mean_correlation'])
-                                    for i, sample in enumerate(dataset)]). \
-        sort_values('mean_correlation', ascending=False).reset_index(drop=True)
+    dataset_indices = pd.DataFrame([dict(id=sample['id'], index_in_dataset=i)
+                                    for i, sample in enumerate(dataset)])
+    # dataset_indices = pd.DataFrame([dict(id=sample['id'], index_in_dataset=i,
+    #                                      mean_correlation=attention_data[sample['id']]['mean_correlation'])
+    #                                 for i, sample in enumerate(dataset)]). \
+    #     sort_values('mean_correlation', ascending=False).reset_index(drop=True)
     return dataset_indices
 
 
 def show_dataset_info(dataset_indices: pd.DataFrame) -> int:
     st.text("dataset: Librispeech/train")
     i_sorted = st.number_input("select index in sorted dataset", 0, len(dataset_indices) - 1)
-    st.text(f"id: {dataset_indices.iloc[i_sorted]['id']}\n"
-            f"correlation (cosine): {dataset_indices.iloc[i_sorted]['mean_correlation']:.3f}")
+    st.text(f"id: {dataset_indices.iloc[i_sorted]['id']}\n")
+    # f"correlation (cosine): {dataset_indices.iloc[i_sorted]['mean_correlation']:.3f}")
     return i_sorted
 
 
@@ -93,6 +95,9 @@ def display_sample(analysis_generator: AnalysisGenerator, metric: CorrelationAna
     st.audio(sample.audio['array'], sample_rate=AlignmentConstants.FS)
     st.markdown(f"**text**: {sample.text.lower()}")
     tokens = tokenizer.tokenize(sample.text.lower())
+    if use_cls_and_sep:
+        tokens = ['[CLS]'] + tokens + ['[SEP]']
+
     st.markdown(f'**tokens**: {" | ".join(tokens)}')
 
     st.subheader("Attention Visualization")
@@ -113,8 +118,7 @@ def display_sample(analysis_generator: AnalysisGenerator, metric: CorrelationAna
     st.text(f"correlation: {correlation:.3f}")
 
     display_attention_heatmaps(avg_by_layer_model1, avg_by_layer_model2, tokens, bert_layer_idx, wav2vec2_layer_idx)
-    display_all_heads_attention_heatmaps(analysis_generator, sample, tokens, bert_layer_idx, wav2vec2_layer_idx,
-                                         use_cls_and_sep)
+    display_all_heads_attention_heatmaps(analysis_generator, sample, tokens, bert_layer_idx, wav2vec2_layer_idx)
 
     display_attention_correlation_analysis_generator(avg_layers_cmp)
 
@@ -172,9 +176,7 @@ def display_attention_heatmaps(avg_by_layer_model1: np.ndarray, avg_by_layer_mod
 
 
 def display_all_heads_attention_heatmaps(analysis_generator: AnalysisGenerator, sample: Sample, tokens: List[str],
-                                         bert_layer_idx: int, wav2vec2_layer_idx: int, use_cls_and_sep: bool) -> None:
-    if use_cls_and_sep:
-        tokens = ['[CLS]'] + tokens + ['[SEP]']
+                                         bert_layer_idx: int, wav2vec2_layer_idx: int) -> None:
     with st.expander("show all heads in layer"):
         if st.button("Generate data"):
             attention_lm, attention_asr = analysis_generator.get_attentions(sample, sample)
