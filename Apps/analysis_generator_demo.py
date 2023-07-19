@@ -126,7 +126,8 @@ def display_sample(analysis_generator: AnalysisGenerator, metric: CorrelationAna
 def get_avg_layer_comparison(analysis_generator: AnalysisGenerator, avg_by_layer_model1: np.ndarray,
                              avg_by_layer_model2: np.ndarray) -> np.ndarray:
     avg_layers_cmp = analysis_generator.get_correlations_of_attentions(avg_by_layer_model1[:, None],
-                                                                       avg_by_layer_model2[:, None]).squeeze()
+                                                                       avg_by_layer_model2[:,
+                                                                       None]).get_full_correlations_comparisons().squeeze()
     return avg_layers_cmp
 
 

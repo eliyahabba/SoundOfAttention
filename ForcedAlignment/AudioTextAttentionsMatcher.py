@@ -20,12 +20,14 @@ class AudioTextAttentionsMatcher:
         return matches
 
     @staticmethod
-    def align_attentions(audio: Dict[str, any], text: str, audio_attention: Attentions, use_cls_and_sep: bool = False) -> Attentions:
+    def align_attentions(audio: Dict[str, any], text: str, audio_attention: Attentions,
+                         use_cls_and_sep: bool = False) -> Attentions:
         matches = AudioTextAttentionsMatcher.align_text_audio(audio, text)
 
         # group the audio_attention matrix by the matches
         grouped_audio_attention = AudioTextAttentionsMatcher.group_attention_matrix_by_matches(audio_attention,
-                                                                                               matches, use_cls_and_sep=use_cls_and_sep)
+                                                                                               matches,
+                                                                                               use_cls_and_sep=use_cls_and_sep)
 
         return grouped_audio_attention
 
@@ -40,9 +42,8 @@ class AudioTextAttentionsMatcher:
             matches.insert(0, {'audio_start': 0, 'audio_end': matches[0]['audio_start']})
             matches.append({'audio_start': matches[-1]['audio_end'], 'audio_end': audio_attention.shape[-1]})
 
-
         aggregated_attention = np.zeros((audio_attention.attentions.shape[0], audio_attention.attentions.shape[1],
-                                             len(matches), len(matches)))
+                                         len(matches), len(matches)))
 
         # Iterate over the index tuples
         for i, match_row in enumerate(matches):

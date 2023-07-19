@@ -4,6 +4,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 from Common.Constants import Constants
+from DataModels.CorrelationsAttentionsComparisons import CorrelationsAttentionsComparisons
 from DataModels.Sample import Sample
 
 AttentionsConstants = Constants.AttentionsConstants
@@ -13,11 +14,12 @@ class VisualizerAttentionsResults:
     @staticmethod
     def plot_correlation_of_attentions(sample: Sample, model_name1: str,
                                        model_name2: str,
-                                       correlations_comparisons: np.ndarray):
+                                       correlations_attentions_comparisons: CorrelationsAttentionsComparisons):
         # Plot the correlation matrix
-        correlations_comparisons_flat = correlations_comparisons.reshape(
-            correlations_comparisons.shape[0] * correlations_comparisons.shape[1],
-            correlations_comparisons.shape[2] * correlations_comparisons.shape[3])
+        full_correlations_comparisons = correlations_attentions_comparisons.get_full_correlations_comparisons()
+        correlations_comparisons_flat = full_correlations_comparisons.reshape(
+            full_correlations_comparisons.shape[0] * full_correlations_comparisons.shape[1],
+            full_correlations_comparisons.shape[2] * full_correlations_comparisons.shape[3])
         correlation_df = pd.DataFrame(correlations_comparisons_flat)
         fig, ax = plt.subplots(figsize=(40, 40))
         ax = sns.heatmap(correlation_df, annot=True, cmap='coolwarm', vmin=0, vmax=1, ax=ax,
@@ -37,8 +39,8 @@ class VisualizerAttentionsResults:
     @staticmethod
     def plot_correlation_of_attentions_by_avg_of_each_layer(sample: Sample, model_name1: str,
                                                             model_name2: str,
-                                                            correlations_comparisons: np.ndarray):
-        correlation_df = pd.DataFrame(correlations_comparisons)
+                                                            correlations_attentions_comparisons: CorrelationsAttentionsComparisons):
+        correlation_df = pd.DataFrame(correlations_attentions_comparisons)
         fig, ax = plt.subplots(figsize=(10, 12))
         ax = sns.heatmap(correlation_df, annot=True, cmap='coolwarm', vmin=0, vmax=1, ax=ax,
                          annot_kws={"fontsize": 11, "fontweight": 'bold'})
@@ -77,21 +79,22 @@ class VisualizerAttentionsResults:
         plt.show()
 
     @staticmethod
-    def plot_histogram_of_layers_and_heads(full_correlations_comparisons: np.ndarray):
+    def plot_histogram_of_layers_and_heads(correlations_attentions_comparisons: CorrelationsAttentionsComparisons):
         """
         Gets data of a sample of a shape (L,H,L,H)
         shows histogram of the correlation of layer to layer compare to other heads.
         print the mean of those groups.
         """
-        group1 = full_correlations_comparisons[np.arange(full_correlations_comparisons.shape[0]), :,
-                 np.arange(full_correlations_comparisons.shape[0]), :].flatten()
-        mask = np.ones_like(full_correlations_comparisons)
-        mask[np.arange(full_correlations_comparisons.shape[0]), :, np.arange(full_correlations_comparisons.shape[0]),
-        :] = 0
-        group2 = full_correlations_comparisons[mask.astype(bool)]
+        full_correlations_attentions_comparisons = correlations_attentions_comparisons.get_full_correlations_comparisons()
+        group1 = full_correlations_attentions_comparisons[np.arange(full_correlations_attentions_comparisons.shape[0]),
+                 :, np.arange(full_correlations_attentions_comparisons.shape[0]), :].flatten()
+        mask = np.ones_like(full_correlations_attentions_comparisons)
+        mask[np.arange(full_correlations_attentions_comparisons.shape[0]), :,
+        np.arange(full_correlations_attentions_comparisons.shape[0]), :] = 0
+        group2 = full_correlations_attentions_comparisons[mask.astype(bool)]
 
-        min_data = full_correlations_comparisons.min()
-        max_data = full_correlations_comparisons.max()
+        min_data = full_correlations_attentions_comparisons.min()
+        max_data = full_correlations_attentions_comparisons.max()
         bins = np.linspace(min_data, max_data, 50)
 
         plt.hist(group1, bins, alpha=0.5, label='Layer to Layer corr')
