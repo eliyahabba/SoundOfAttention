@@ -15,9 +15,9 @@ def play_with_loss():
     dataset = load_dataset("patrickvonplaten/librispeech_asr_dummy", 'clean', split='validation')
 
     bert_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                  align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+                                  align_to_text_tokens=False, use_cls_and_sep=True)
     roberta_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
-                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+                                     align_to_text_tokens=False, use_cls_and_sep=True)
 
     bert_model = TextModel(bert_metadata, device=device)
     roberta_model = TextModel(roberta_metadata, device=device)
@@ -102,9 +102,9 @@ def run_stats_loss(model_metadata, dataset):
 
 if __name__ == '__main__':
     bert_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                  align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+                                  align_to_text_tokens=False, use_cls_and_sep=False)
     roberta_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
-                                     align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+                                     align_to_text_tokens=False, use_cls_and_sep=True)
 
     # dataset_name = 'albertvillanova/universal_dependencies'
     # dataset_split = 'en_ewt'
@@ -115,5 +115,5 @@ if __name__ == '__main__':
 
     for model_name in model_names:
         for use_cls_and_sep in uses_cls_and_sep:
-            model_metadata = ModelMetadata(model_name=model_name, data_type=DataType.Text, align_tokens_to_bert_tokens=False, use_cls_and_sep=use_cls_and_sep)
+            model_metadata = ModelMetadata(model_name=model_name, data_type=DataType.Text, align_to_text_tokens=False, use_cls_and_sep=use_cls_and_sep)
             run_stats_loss(model_metadata, dataset)

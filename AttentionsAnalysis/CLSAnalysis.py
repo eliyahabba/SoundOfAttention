@@ -1,21 +1,10 @@
-from argparse import ArgumentParser
-from typing import Tuple
 import numpy as np
-import pandas as pd
-import torch
 from datasets import load_dataset
 from tqdm import tqdm
-
-from AttentionExtractors.ExtractorFactory import ExtractorFactory
-from AttentionsComparators.CorrelationsAttentionsComparator import CorrelationsAttentionsComparator
 from Common.Constants import Constants
-from CorrelationsAnalysis.CorrelationAnalysis import CorrelationAnalysis
-from DataModels.Attentions import Attentions
-from DataModels.CorrelationsAttentionsComparisons import CorrelationsAttentionsComparisons
 from DataModels.DataType import DataType
 from DataModels.ModelMetadata import ModelMetadata
 from DataModels.Sample import Sample
-from Visualizers.VisualizerAttentionsResults import VisualizerAttentionsResults
 from AttentionsAnalysis.AnalysisGenerator import AnalysisGenerator
 from scipy.spatial.distance import cosine
 
@@ -23,22 +12,15 @@ from scipy.spatial.distance import cosine
 DEFAULT_AUDIO_KEY = Constants.AudioModelProcessorConstants.LIBRISPEECH_AUDIO_KEY
 DISPLAY = True
 
+
 if __name__ == '__main__':
-    argparse = ArgumentParser()
-    argparse.add_argument("--display", type=bool, default=DISPLAY)
-    args = argparse.parse_args()
 
     dataset = load_dataset("patrickvonplaten/librispeech_asr_dummy", 'clean', split='validation')
 
-    # Example 1 - Compare text to audio
-    # Start
-    sample1 = Sample(id=dataset[1]["id"], text=dataset[1]["text"], audio=dataset[1]["audio"])
-    sample2 = sample1
-
     model2_metadata = ModelMetadata(model_name="facebook/wav2vec2-base-960h", data_type=DataType.Audio,
-                                    align_tokens_to_bert_tokens=True, use_cls_and_sep=True)
+                                    align_to_text_tokens=True, use_cls_and_sep=True)
     model1_metadata = ModelMetadata(model_name="facebook/wav2vec2-base-960h", data_type=DataType.Audio,
-                                    align_tokens_to_bert_tokens=True, use_cls_and_sep=False)
+                                    align_to_text_tokens=True, use_cls_and_sep=False)
 
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     means_ones_twos = []
@@ -48,7 +30,6 @@ if __name__ == '__main__':
     means_lasts = []
     medians_lasts = []
     num_sampels = 0
-    num_comapre = 0
     for data in tqdm(dataset):
         sample = Sample(id=data["id"], text=data["text"], audio=data["audio"])
         # attention_model1 = analysis_generator.extractor1.extract_attention(sample=sample)
@@ -56,7 +37,6 @@ if __name__ == '__main__':
         if attention_model2.shape[-1] < 6:
             continue
         num_sampels += 1
-        num_comapre += attention_model2.shape[-1] * 144
         ones = attention_model2.attentions[:,:,:,0].reshape(-1, attention_model2.shape[-1])
         twos = attention_model2.attentions[:,:,:,1].reshape(-1, attention_model2.shape[-1])
         threes = attention_model2.attentions[:,:,:,2].reshape(-1, attention_model2.shape[-1])

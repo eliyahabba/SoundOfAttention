@@ -13,21 +13,21 @@ AudioModelProcessorConstants = Constants.AudioModelProcessorConstants
 
 
 class AudioTextAttentionsMatcher:
-    @staticmethod
-    def align_text_audio(audio: dict, text: str):
-        text_audio_matcher = TextAudioMatcher(BasicResources())
-        matches = text_audio_matcher.match(text, audio)
+    def __init__(self, text_model_name = 'bert-base-uncased'):
+        self.text_audio_matcher = TextAudioMatcher(BasicResources(text_model_name=text_model_name))
+
+    def align_text_audio(self, audio: dict, text: str):
+        # text_audio_matcher = TextAudioMatcher(BasicResources())
+        matches = self.text_audio_matcher.match(text, audio)
         return matches
 
-    @staticmethod
-    def align_attentions(audio: Dict[str, any], text: str, audio_attention: Attentions,
+    def align_attentions(self, audio: Dict[str, any], text: str, audio_attention: Attentions,
                          use_cls_and_sep: bool = False) -> Attentions:
-        matches = AudioTextAttentionsMatcher.align_text_audio(audio, text)
+        matches = self.align_text_audio(audio, text)
 
         # group the audio_attention matrix by the matches
-        grouped_audio_attention = AudioTextAttentionsMatcher.group_attention_matrix_by_matches(audio_attention,
-                                                                                               matches,
-                                                                                               use_cls_and_sep=use_cls_and_sep)
+        grouped_audio_attention = self.group_attention_matrix_by_matches(audio_attention, matches,
+                                                                        use_cls_and_sep=use_cls_and_sep)
 
         return grouped_audio_attention
 
@@ -74,4 +74,5 @@ if __name__ == "__main__":
     audio_attention = audio_attention_extractor_model.extract_attention(audio_values)
 
     # group the audio_attention matrix by the matches
-    aligned_audio_attention = AudioTextAttentionsMatcher.align_attentions(audio, text, audio_attention)
+    audio_text_attentions_matcher = AudioTextAttentionsMatcher()
+    aligned_audio_attention = audio_text_attentions_matcher.align_attentions(audio, text, audio_attention)

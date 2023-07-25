@@ -126,9 +126,9 @@ if __name__ == '__main__':
     sample2 = sample1
 
     model1_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+                                    align_to_text_tokens=False, use_cls_and_sep=True)
     model2_metadata = ModelMetadata(model_name="facebook/wav2vec2-base-960h", data_type=DataType.Audio,
-                                    align_tokens_to_bert_tokens=True, use_cls_and_sep=True)
+                                    align_to_text_tokens=True, use_cls_and_sep=True)
 
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     sample2.text = 'Bey, I am going home'
 
     model1_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+                                    align_to_text_tokens=False, use_cls_and_sep=True)
     model2_metadata = model1_metadata
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
@@ -163,7 +163,7 @@ if __name__ == '__main__':
                                                                                          correlation_df=head_to_head_correlations_comparisons_with_cls)
 
     model1_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+                                    align_to_text_tokens=False, use_cls_and_sep=False)
     model2_metadata = model1_metadata
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     sample2.text = 'Bey, I am going home'
 
     model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+                                    align_to_text_tokens=False, use_cls_and_sep=True)
     model2_metadata = model1_metadata
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
@@ -206,7 +206,7 @@ if __name__ == '__main__':
         attention_model2)
 
     model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+                                    align_to_text_tokens=False, use_cls_and_sep=False)
     model2_metadata = model1_metadata
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
@@ -224,9 +224,9 @@ if __name__ == '__main__':
     sample2.text = 'Hello, my dog is cute'
 
     model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+                                    align_to_text_tokens=False, use_cls_and_sep=True)
     model2_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
+                                    align_to_text_tokens=False, use_cls_and_sep=True)
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
     correlations_attentions_comparisons_4_with_cls = analysis_generator.get_correlations_of_attentions(attention_model1,
@@ -236,9 +236,9 @@ if __name__ == '__main__':
         attention_model2)
 
     model1_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+                                    align_to_text_tokens=False, use_cls_and_sep=False)
     model2_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=False)
+                                    align_to_text_tokens=False, use_cls_and_sep=False)
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
     attention_model1, attention_model2 = analysis_generator.get_attentions(sample1, sample2)
     correlations_attentions_comparisons_4_without_cls = analysis_generator.get_correlations_of_attentions(

@@ -22,9 +22,9 @@ ATTENTIONS_BASE_PATH = Path(__file__).parents[1] / 'Data'
 @st.cache_resource
 def get_analysis_generator(metric_name: str, use_cls_and_sep: bool = True) -> AnalysisGenerator:
     model1_metadata = ModelMetadata(model_name="bert-base-uncased", data_type=DataType.Text,
-                                    align_tokens_to_bert_tokens=False, use_cls_and_sep=use_cls_and_sep)
+                                    align_to_text_tokens=False, use_cls_and_sep=use_cls_and_sep)
     model2_metadata = ModelMetadata(model_name="facebook/wav2vec2-base-960h", data_type=DataType.Audio,
-                                    align_tokens_to_bert_tokens=True, use_cls_and_sep=use_cls_and_sep)
+                                    align_to_text_tokens=True, use_cls_and_sep=use_cls_and_sep)
     analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric=metric_name)
     return analysis_generator
 

@@ -20,7 +20,7 @@ class TextAttentionExtractor(AttentionExtractor):
     def extract_attention(self, sample: Sample) -> Attentions:
         outputs = self.text_model_processor.run(sample.text)  # MaskedLMOutput
         attentions = self.get_attention_matrix(outputs)  # Attentions
-        if self.model_metadata.align_tokens_to_bert_tokens:
+        if self.model_metadata.align_to_text_tokens:
             attentions = self.align_attentions(sample, attentions,
                                                use_cls_and_sep=self.text_model_processor.text_model.model_metadata.use_cls_and_sep)
         return attentions

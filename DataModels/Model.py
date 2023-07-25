@@ -15,7 +15,7 @@ class Model:
         Parameters:
         model_name (str): The name of the Audio model
         data_type (str): The type of data the model is trained on (e.g., audio, text)
-        align_tokens_to_bert_tokens (bool): Whether to align the tokens to the BERT tokens
+        align_to_text_tokens (bool): Whether to align the tokens to the BERT tokens
         device (torch.device): The device to run the model on
     """
     model_metadata: ModelMetadata
