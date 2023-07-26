@@ -49,7 +49,7 @@ class CorrelationAnalysis:
             raise ValueError(
                 "Invalid correlation metric. Supported options: 'KL', 'JS', 'Cosine', 'tot_var', 'pearson'")
 
-    def preprocess(self, matrix1: np.ndarray, matrix2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def preprocess(self, matrix1: np.ndarray, matrix2: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
         if self.diagonal_randomization:
             matrix1, matrix2 = CorrelationAnalysis.randomize_diagonals_values(matrix1, matrix2)
