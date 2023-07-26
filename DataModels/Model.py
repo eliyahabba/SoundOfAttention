@@ -24,6 +24,10 @@ class Model:
     model: torch.nn.Module = None
 
     def __call__(self, input_ids: torch.Tensor) -> Union[MaskedLMOutput, Wav2Vec2BaseModelOutput]:
+        # we don't train the model, so we set it to evaluation mode
+        self.model.eval()
         # Move the model to the provided device
         self.model.to(self.device)
-        return self.model(input_ids)
+        # Use torch.inference_mode() to disable gradient computation and save memory
+        with torch.inference_mode():
+            return self.model(input_ids)
