@@ -13,21 +13,21 @@ AudioModelProcessorConstants = Constants.AudioModelProcessorConstants
 
 
 class AudioTextAttentionsMatcher:
-    @staticmethod
-    def align_text_audio(audio: dict, text: str):
-        text_audio_matcher = TextAudioMatcher(BasicResources())
-        matches = text_audio_matcher.match(text, audio)
+    def __init__(self):
+        self.text_audio_matcher = TextAudioMatcher(BasicResources())
+
+    def align_text_audio(self, audio: dict, text: str):
+        matches = self.text_audio_matcher.match(text, audio)
         return matches
 
-    @staticmethod
-    def align_attentions(audio: Dict[str, any], text: str, audio_attention: Attentions,
+    def align_attentions(self, audio: Dict[str, any], text: str, audio_attention: Attentions,
                          use_cls_and_sep: bool = False) -> Attentions:
-        matches = AudioTextAttentionsMatcher.align_text_audio(audio, text)
+        matches = self.align_text_audio(audio, text)
 
         # group the audio_attention matrix by the matches
-        grouped_audio_attention = AudioTextAttentionsMatcher.group_attention_matrix_by_matches(audio_attention,
-                                                                                               matches,
-                                                                                               use_cls_and_sep=use_cls_and_sep)
+        grouped_audio_attention = self.group_attention_matrix_by_matches(audio_attention,
+                                                                         matches,
+                                                                         use_cls_and_sep=use_cls_and_sep)
 
         return grouped_audio_attention
 

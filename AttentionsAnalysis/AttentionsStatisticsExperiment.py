@@ -7,14 +7,13 @@ import torch
 from datasets import load_dataset
 from tqdm import tqdm
 
-from AttentionsAnalysis.AnalysisGenerator import AnalysisGenerator
+from AnalysisGenerator import AnalysisGenerator
 from AttentionsComparators.CorrelationsAttentionsComparator import AttentionsConstants
 from Common.Constants import Constants
 from DataModels.DataType import DataType
 from DataModels.ModelMetadata import ModelMetadata
 from DataModels.Sample import Sample
 
-DEFAULT_AUDIO_KEY = Constants.AudioModelProcessorConstants.LIBRISPEECH_AUDIO_KEY
 
 
 class AttentionsStatisticsExperiment:
