@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --mem=16g
 #SBATCH --time=1-0
-#SBATCH --gres=gpu:1,vmem:20g
+#SBATCH --gres=gpu:1
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --exclude=ampere-01,arion-01,arion-01,arion-02,binky-01,binky-02,binky-03,binky-04,binky-05
+#SBATCH --nodelist creek-01
 
 sacct -j $SLURM_JOB_ID --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist
 module load cuda
