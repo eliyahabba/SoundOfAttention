@@ -50,8 +50,15 @@ class AttentionsDataCreator:
                 example = f"{sample1.text}" if sample1.text == sample2.text else f"{sample1.text} and {sample2.text}"
                 print(f"Failed to calculate for sample {example}")
         # save results to pickle file
-        with open(f'correlations_for_{self.model1_metadata.model_name}_and_{self.model2_metadata.model_name}'
-                  f'_{self.start_example}_{self.end_example}.pkl', 'wb') as handle:
+        model_name1 = self.model1_metadata.model_name
+        model_name2 = self.model2_metadata.model_name
+        # if the model name is 'facebook/wav2vec2-base-960h' we need to remove the '/' from the name
+        if '/' in model_name1:
+            model_name1 = model_name1.replace('/', '')
+        if '/' in model_name2:
+            model_name2 = model_name2.replace('/', '')
+        path = f'correlations_for_{model_name1}_and_{model_name2}_{self.start_example}_{self.end_example}.pkl'
+        with open(path, 'wb') as handle:
             pickle.dump(correlations, handle)
 
     def load_dataset(self, start_example=None, end_example=None):
