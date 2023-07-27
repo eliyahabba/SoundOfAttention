@@ -17,13 +17,17 @@ class AttentionsDataCreator:
     """
 
     def __init__(self, model1_metadata: ModelMetadata, model2_metadata: ModelMetadata, use_dummy_dataset: bool = False,
+                 start_example=None, end_example=None,
                  metric: str = "Cosine"):
         self.model1_metadata = model1_metadata
         self.model2_metadata = model2_metadata
         self.metric = metric
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
-        self.dataset = self.load_dummy_dataset() if use_dummy_dataset else self.load_dataset()
+        self.start_example = start_example
+        self.end_example = end_example
+        self.dataset = self.load_dummy_dataset() if use_dummy_dataset else self.load_dataset(self.start_example,
+                                                                                             self.end_example)
 
     def get_correlations_attentions_comparisons(self, sample1: Sample, sample2: Sample):
         attention_model1, attention_model2 = self.analysis_generator.get_attentions(sample1, sample2)
@@ -44,12 +48,15 @@ class AttentionsDataCreator:
                 example = f"{sample1.text}" if sample1.text == sample2.text else f"{sample1.text} and {sample2.text}"
                 print(f"Failed to calculate for sample {example}")
         # save results to pickle file
-        with open(f'correlations_for_{self.model1_metadata.model_name}_and_{self.model2_metadata.model_name}.pickle',
-                  'wb') as handle:
+        with open(f'correlations_for_{self.model1_metadata.model_name}_and_{self.model2_metadata.model_name}'
+                  f'_{self.start_example}_{self.end_example}.pkl', 'wb') as handle:
             pickle.dump(correlations, handle)
 
-    def load_dataset(self):
-        dataset = load_dataset("librispeech_asr", 'clean', split='validation')
+    def load_dataset(self, start_example=None, end_example=None):
+        if start_example is not None and end_example is not None:
+            dataset = load_dataset("librispeech_asr", 'clean', split=f'validation[{start_example}:{end_example}]')
+        else:
+            dataset = load_dataset("librispeech_asr", 'clean', split='validation')
         return dataset
 
     def load_dummy_dataset(self):
@@ -64,6 +71,8 @@ if __name__ == "__main__":
                         default="text_to_audio", help="The name of the experiment to run")
     parser.add_argument("--use_dummy_dataset", type=bool, default=False,
                         help="Whether to use a dummy dataset for the experiment")
+    parser.add_argument("--start_example", type=int, default=0)
+    parser.add_argument("--end_example", type=int, default=400)
     args = parser.parse_args()
 
     if args.experiment_name == "text_to_text":
@@ -81,7 +90,8 @@ if __name__ == "__main__":
         model2_metadata = ModelMetadata(model_name="facebook/wav2vec2-base-960h", data_type=DataType.Audio,
                                         align_tokens_to_bert_tokens=True, use_cls_and_sep=True)
         attention_similarity = AttentionsDataCreator(model1_metadata, model2_metadata,
-                                                     use_dummy_dataset=args.use_dummy_dataset)
+                                                     use_dummy_dataset=args.use_dummy_dataset,
+                                                     start_example=args.start_example, end_example=args.end_example)
         attention_similarity.run()
 
 
