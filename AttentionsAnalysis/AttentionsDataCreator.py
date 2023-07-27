@@ -90,7 +90,8 @@ if __name__ == "__main__":
         model2_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
                                         align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
         attention_similarity = AttentionsDataCreator(model1_metadata, model2_metadata,
-                                                     use_dummy_dataset=args.use_dummy_dataset)
+                                                     use_dummy_dataset=args.use_dummy_dataset,
+                                                     start_example=args.start_example, end_example=args.end_example)
         attention_similarity.run()
 
     elif args.experiment_name == "text_to_audio":
