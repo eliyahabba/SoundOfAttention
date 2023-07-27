@@ -4,6 +4,8 @@ import pickle
 import torch
 from datasets import load_dataset
 from tqdm import tqdm
+import sys
+sys.path.append(r'/cs/snapless/gabis/eliyahabba/Legal_nlp/SoundOfAttention')
 
 from AnalysisGenerator import AnalysisGenerator
 from DataModels.DataType import DataType
