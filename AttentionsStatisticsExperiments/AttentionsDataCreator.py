@@ -25,7 +25,7 @@ class AttentionsDataCreator:
         self.model2_metadata = model2_metadata
         self.metric = metric
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
+        self.analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric=self.metric)
         self.start_example = start_example
         self.end_example = end_example
         self.dataset = self.load_dummy_dataset() if use_dummy_dataset else self.load_dataset(self.start_example,
@@ -90,6 +90,8 @@ if __name__ == "__main__":
                         help="Whether to use a dummy dataset for the experiment")
     parser.add_argument("--start_example", type=int, default=0)
     parser.add_argument("--end_example", type=int, default=2703)
+    parser.add_argument("--metric", type=str, default='Cosine')
+
     args = parser.parse_args()
 
     if args.experiment_name == "text_to_text":
@@ -112,6 +114,7 @@ if __name__ == "__main__":
 
     attention_similarity = AttentionsDataCreator(model1_metadata, model2_metadata,
                                                  use_dummy_dataset=args.use_dummy_dataset,
-                                                 start_example=args.start_example, end_example=args.end_example)
+                                                 start_example=args.start_example, end_example=args.end_example,
+                                                 metric=args.metric)
 
     attention_similarity.run()
