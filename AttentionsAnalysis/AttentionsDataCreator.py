@@ -9,6 +9,13 @@ from AnalysisGenerator import AnalysisGenerator
 from DataModels.DataType import DataType
 from DataModels.ModelMetadata import ModelMetadata
 from DataModels.Sample import Sample
+import os
+import pandas as pd
+
+
+bert_base_path = "/home/vpnuser/cs_huji/anlp/ud_bert_attn"
+w2v2_base_path = "/home/vpnuser/cs_huji/anlp/ud_w2v2_attn_agg_tokens"
+
 
 
 class AttentionsDataCreator:
@@ -22,35 +29,39 @@ class AttentionsDataCreator:
         self.model2_metadata = model2_metadata
         self.metric = metric
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
+        self.analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric=metric)
         self.dataset = self.load_dummy_dataset() if use_dummy_dataset else self.load_dataset()
 
-    def get_correlations_attentions_comparisons(self, sample1: Sample, sample2: Sample):
-        attention_model1, attention_model2 = self.analysis_generator.get_attentions(sample1, sample2)
+    def get_correlations_attentions_comparisons(self, attention_model1, attention_model2):
+        # attention_model1, attention_model2 = self.analysis_generator.get_attentions(sample1, sample2)
         correlations_attentions_comparisons = self.analysis_generator.get_correlations_of_attentions(attention_model1,
                                                                                                      attention_model2)
         return correlations_attentions_comparisons
 
     def run(self):
         correlations = {}
-        for i in tqdm(range(len(self.dataset))):
-            sample1 = Sample(id=self.dataset[i]["id"], text=self.dataset[i]["text"], audio=self.dataset[i]["audio"])
-            sample2 = sample1
+        for i, fname in tqdm(enumerate(self.dataset)):
+            attn1 = pd.read_pickle(os.path.join(bert_base_path, fname))
+            attn2 = pd.read_pickle(os.path.join(w2v2_base_path, fname))
             try:
                 correlations_attentions_comparisons = self.get_correlations_attentions_comparisons(
-                    sample1, sample2)
-                correlations[sample1.id] = correlations_attentions_comparisons
+                    attn1, attn2)
+                correlations[fname.split('.')[0]] = correlations_attentions_comparisons
             except AssertionError as e:
-                example = f"{sample1.text}" if sample1.text == sample2.text else f"{sample1.text} and {sample2.text}"
-                print(f"Failed to calculate for sample {example}")
+                example = f"{i} {fname}"
+                print(f"Failed to calculate for sample {example} with error {e}")
         # save results to pickle file
-        with open(f'correlations_for_{self.model1_metadata.model_name}_and_{self.model2_metadata.model_name.replace("/", "_")}.pickle',
+        with open(f'correlations_for_{self.model1_metadata.model_name}_and_{self.model2_metadata.model_name.replace("/", "_")}_transpose.pickle',
                   'wb') as handle:
             pickle.dump(correlations, handle)
 
     def load_dataset(self):
-        dataset = load_dataset("librispeech_asr", 'clean', split='validation')
-        return dataset
+        # dataset = load_dataset("librispeech_asr", 'clean', split='validation')
+        # return dataset
+        bert_files = os.listdir(bert_base_path)
+        bert_files.sort(key=lambda x: int(x.split("_")[0]))
+
+        return bert_files
 
     def load_dummy_dataset(self):
         dataset = load_dataset("patrickvonplaten/librispeech_asr_dummy", 'clean', split='validation')

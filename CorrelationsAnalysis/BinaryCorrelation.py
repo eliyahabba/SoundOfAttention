@@ -30,7 +30,7 @@ class JaccardSimCoeff(CorrelationCalculatorInterface):
         i_2,j_2 = np.where(matrix2 > 0)
         indecis_mat_2 = set([(a,b) for a,b in zip(i_2, j_2)])
 
-        if len(indecis_mat_2.intersection(indecis_mat_1)):
+        if len(indecis_mat_2.intersection(indecis_mat_1)) == 0:
             return 0.0
 
         Jaccard_sim_coeff = len(indecis_mat_2.intersection(indecis_mat_1)) / len(indecis_mat_1.union(indecis_mat_2))
