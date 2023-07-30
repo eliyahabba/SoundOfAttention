@@ -26,12 +26,13 @@ class Wav2Vec2Aligner:
             logits = self.model(inputs.input_values).logits
             predicted_ids = torch.argmax(logits, dim=-1)
             predicted_sentences = self.processor.batch_decode(predicted_ids)
+            print(predicted_sentences)
         emissions = torch.log_softmax(logits, dim=-1)
         emission = emissions[0].cpu().detach()
         trellis = self.get_trellis(emission, gt_ids)
 
         path = self.backtrack(trellis, emission, gt_ids)
-
+        print(path)
         segments = self.merge_repeats(path)
         return segments
 

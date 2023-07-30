@@ -103,24 +103,29 @@ def display_sample(analysis_generator: AnalysisGenerator, metric: CorrelationAna
     st.subheader("Attention Visualization")
     st.markdown("**average by layer**: average attention weights of all heads in a layer")
 
-    avg_by_layer_model1 = attention_data[sample.id]['avg_by_layer_model1']
-    avg_by_layer_model2 = attention_data[sample.id]['avg_by_layer_model2']
+    # avg_by_layer_model1 = attention_data[sample.id]['avg_by_layer_model1']
+    # avg_by_layer_model2 = attention_data[sample.id]['avg_by_layer_model2']
 
-    avg_layers_cmp = get_avg_layer_comparison(analysis_generator, avg_by_layer_model1, avg_by_layer_model2)
+    attention_lm, attention_asr = analysis_generator.get_attentions(sample, sample)
 
-    high_correlation_first = st.checkbox("high correlation first", value=True)
-    indices = select_layer_comparison(avg_layers_cmp, high_correlation_first)
+    # avg_layers_cmp = get_avg_layer_comparison(analysis_generator, avg_by_layer_model1, avg_by_layer_model2)
 
-    bert_layer_idx, wav2vec2_layer_idx = select_layer_indices(avg_by_layer_model1, avg_by_layer_model2, indices)
+    # high_correlation_first = st.checkbox("high correlation first", value=True)
+    # indices = select_layer_comparison(avg_layers_cmp, high_correlation_first)
 
-    correlation = calculate_correlation(metric, avg_by_layer_model1, avg_by_layer_model2, bert_layer_idx,
-                                        wav2vec2_layer_idx)
+    bert_layer_idx, bert_head_idx, wav2vec2_layer_idx, wav2vec2_head_idx = \
+        select_layer_indices(attention_lm, attention_asr, None)
+
+    correlation = calculate_correlation(metric, attention_lm[bert_layer_idx][bert_head_idx],
+                                        attention_asr[wav2vec2_layer_idx][wav2vec2_head_idx])
     st.text(f"correlation: {correlation:.3f}")
 
-    display_attention_heatmaps(avg_by_layer_model1, avg_by_layer_model2, tokens, bert_layer_idx, wav2vec2_layer_idx)
-    display_all_heads_attention_heatmaps(analysis_generator, sample, tokens, bert_layer_idx, wav2vec2_layer_idx)
+    display_attention_heatmaps(attention_lm[bert_layer_idx][bert_head_idx],
+                               attention_asr[wav2vec2_layer_idx][wav2vec2_head_idx],
+                               tokens, )
+    # display_all_heads_attention_heatmaps(analysis_generator, sample, tokens, bert_layer_idx, wav2vec2_layer_idx)
 
-    display_attention_correlation_analysis_generator(avg_layers_cmp)
+    # display_attention_correlation_analysis_generator(avg_layers_cmp)
 
 
 def get_avg_layer_comparison(analysis_generator: AnalysisGenerator, avg_by_layer_model1: np.ndarray,
@@ -150,29 +155,35 @@ def select_layer_indices(avg_by_layer_model1: np.ndarray, avg_by_layer_model2: n
     with cols[0]:
         bert_layer_idx = st.number_input("select layer (bert)", 0,
                                          avg_by_layer_model1.shape[0] - 1,
-                                         value=indices['bert_layer'])
+                                         value=0)
+        bert_head_idx = st.number_input("select head (bert)", 0,
+                                        avg_by_layer_model1.shape[1] - 1,
+                                        value=0)
     with cols[2]:
         wav2vec2_layer_idx = st.number_input("select layer (wav2vec2)", 0,
                                              avg_by_layer_model2.shape[0] - 1,
-                                             value=indices['wav2vec2_layer'])
-    return bert_layer_idx, wav2vec2_layer_idx
+                                             value=0)
+        wav2vec2_head_idx = st.number_input("select head (wav2vec2)", 0,
+                                            avg_by_layer_model2.shape[1] - 1,
+                                            value=0)
+
+    return bert_layer_idx, bert_head_idx, wav2vec2_layer_idx, wav2vec2_head_idx
 
 
 def calculate_correlation(metric: CorrelationAnalysis, avg_by_layer_model1: np.ndarray, avg_by_layer_model2: np.ndarray,
-                          bert_layer_idx: int, wav2vec2_layer_idx: int) -> float:
-    correlation = metric.forward(avg_by_layer_model1[bert_layer_idx],
-                                 avg_by_layer_model2[wav2vec2_layer_idx])
+                          ) -> float:
+    correlation = metric.forward(avg_by_layer_model1,
+                                 avg_by_layer_model2)
     return correlation
 
 
-def display_attention_heatmaps(avg_by_layer_model1: np.ndarray, avg_by_layer_model2: np.ndarray, tokens: List[str],
-                               bert_layer_idx: int, wav2vec2_layer_idx: int) -> None:
+def display_attention_heatmaps(avg_by_layer_model1: np.ndarray, avg_by_layer_model2: np.ndarray, tokens: List[str],) -> None:
     cols = st.columns(2)
     with cols[0]:
-        st.plotly_chart(px.imshow(avg_by_layer_model1[bert_layer_idx], x=tokens, y=tokens,
+        st.plotly_chart(px.imshow(avg_by_layer_model1, x=tokens, y=tokens,
                                   color_continuous_scale='Blues', title="BERT"))
     with cols[1]:
-        st.plotly_chart(px.imshow(avg_by_layer_model2[wav2vec2_layer_idx], x=tokens, y=tokens,
+        st.plotly_chart(px.imshow(avg_by_layer_model2, x=tokens, y=tokens,
                                   color_continuous_scale='Blues', title="Wav2Vec2"))
 
 
