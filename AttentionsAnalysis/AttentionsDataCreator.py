@@ -33,7 +33,7 @@ class AttentionsDataCreator:
 
     def run(self):
         correlations = {}
-        for i in tqdm(range(len(self.dataset))):
+        for i in tqdm(range(len(self.dataset)-3, len(self.dataset))):
             sample1 = Sample(id=self.dataset[i]["id"], text=self.dataset[i]["text"], audio=self.dataset[i]["audio"])
             sample2 = sample1
             try:
@@ -44,7 +44,7 @@ class AttentionsDataCreator:
                 example = f"{sample1.text}" if sample1.text == sample2.text else f"{sample1.text} and {sample2.text}"
                 print(f"Failed to calculate for sample {example}")
         # save results to pickle file
-        with open(f'correlations_for_{self.model1_metadata.model_name}_and_{self.model2_metadata.model_name}.pickle',
+        with open(f'correlations_for_{self.model1_metadata.model_name}_and_{self.model2_metadata.model_name.replace("/", "_")}.pickle',
                   'wb') as handle:
             pickle.dump(correlations, handle)
 
@@ -64,6 +64,9 @@ if __name__ == "__main__":
                         default="text_to_audio", help="The name of the experiment to run")
     parser.add_argument("--use_dummy_dataset", type=bool, default=False,
                         help="Whether to use a dummy dataset for the experiment")
+    parser.add_argument("--metric", type=str, default='Cosine',
+                        help="Which metric to use")
+
     args = parser.parse_args()
 
     if args.experiment_name == "text_to_text":
@@ -72,7 +75,8 @@ if __name__ == "__main__":
         model2_metadata = ModelMetadata(model_name="roberta-base", data_type=DataType.Text,
                                         align_tokens_to_bert_tokens=False, use_cls_and_sep=True)
         attention_similarity = AttentionsDataCreator(model1_metadata, model2_metadata,
-                                                     use_dummy_dataset=args.use_dummy_dataset)
+                                                     use_dummy_dataset=args.use_dummy_dataset,
+                                                     metric=args.metric)
         attention_similarity.run()
 
     elif args.experiment_name == "text_to_audio":
@@ -81,7 +85,8 @@ if __name__ == "__main__":
         model2_metadata = ModelMetadata(model_name="facebook/wav2vec2-base-960h", data_type=DataType.Audio,
                                         align_tokens_to_bert_tokens=True, use_cls_and_sep=True)
         attention_similarity = AttentionsDataCreator(model1_metadata, model2_metadata,
-                                                     use_dummy_dataset=args.use_dummy_dataset)
+                                                     use_dummy_dataset=args.use_dummy_dataset,
+                                                     metric=args.metric)
         attention_similarity.run()
 
 
