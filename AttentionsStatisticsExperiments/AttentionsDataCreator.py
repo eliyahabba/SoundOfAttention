@@ -36,20 +36,21 @@ class AttentionsDataCreator:
         return attention_model1, attention_model2
 
     def run(self):
-        attention_model1 = {}
-        attention_model2 = {}
+        all_attention_model1 = {}
+        all_attention_model2 = {}
         for i in tqdm(range(len(self.dataset))):
             sample1 = Sample(id=self.dataset[i]["id"], text=self.dataset[i]["text"], audio=self.dataset[i]["audio"])
             sample2 = sample1
             try:
                 attention_model1, attention_model2 = self.get_correlations_attentions_comparisons(sample1, sample2)
-                attention_model1[sample1.id] = (attention_model1)
-                attention_model2[sample2.id] = (attention_model2)
+                all_attention_model1[sample1.id] = attention_model1
+                all_attention_model2[sample2.id] = attention_model2
             except AssertionError as e:
                 example = f"{sample1.text}" if sample1.text == sample2.text else f"{sample1.text} and {sample2.text}"
                 print(f"Failed to calculate for sample {example}")
         # save results to pickle file
-        self.save_correlations((attention_model1, attention_model2))
+        print(f"the number of samples in model1 is {len(all_attention_model1)} and the number of samples is {len(all_attention_model2)}")
+        self.save_correlations(all_attention_model1, all_attention_model2)
 
     def load_dataset(self, start_example=None, end_example=None):
         if start_example is not None and end_example is not None:
