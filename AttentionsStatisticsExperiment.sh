@@ -24,4 +24,4 @@ source /cs/snapless/gabis/eliyahabba/Legal_nlp/venvs/soundVenv/bin/activate
 
 # the SLURM_ARRAY_TASK_ID variable will get the appropiate array index. using the dollar sign is the way to refrence variables in bash (and echo just prints).
 echo ${SLURM_ARRAY_TASK_ID}
-CUDA_LAUNCH_BLOCKING=1 python AttentionsAnalysis/AttentionsDataCreator.py --start_example $1 --end_example $2
+CUDA_LAUNCH_BLOCKING=1 python AttentionsAnalysis/CorrelationsAttentionsDataCreator.py --start_example $1 --end_example $2
