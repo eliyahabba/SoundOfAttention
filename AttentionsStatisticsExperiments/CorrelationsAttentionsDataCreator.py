@@ -2,10 +2,10 @@ import argparse
 import pickle
 
 import torch
-from AnalysisGenerator import AnalysisGenerator
 from datasets import load_dataset
 from tqdm import tqdm
 
+from AttentionsAnalysis.AnalysisGenerator import AnalysisGenerator
 from DataModels.DataType import DataType
 from DataModels.ModelMetadata import ModelMetadata
 from DataModels.Sample import Sample
