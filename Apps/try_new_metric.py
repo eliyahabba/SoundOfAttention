@@ -12,6 +12,7 @@ st.set_page_config(layout="wide")
 bert_base_path = "/home/vpnuser/cs_huji/anlp/ud_bert_attn"
 w2v2_base_path = "/home/vpnuser/cs_huji/anlp/ud_w2v2_attn_agg_tokens"
 
+
 @st.cache_data
 def init():
     dataset = clean_dataset(get_dataset())
@@ -102,7 +103,9 @@ if __name__ == '__main__':
     w2v2_th = threshold_methods[threshold_method](w2v2_attn[w2v2_layer][w2v2_head])
     st.text(f"Similarity between bert and w2v2:")
     for k in similarity_metrics:
-        st.text(f"{k}: {similarity_metrics[k](threshold_mat_to_indices_set(bert_th[1:-1, 1:-1]), threshold_mat_to_indices_set(w2v2_th[1:-1, 1:-1]))}")
+        similarity = similarity_metrics[k](threshold_mat_to_indices_set(bert_th[1:-1, 1:-1]),
+                                           threshold_mat_to_indices_set(w2v2_th[1:-1, 1:-1]))
+        st.text(f"{k}: {similarity}")
 
     st.text("Attentions after thresholding")
     bert_col, w2v2_col = st.columns(2)
@@ -117,6 +120,6 @@ if __name__ == '__main__':
     st.text("Attentions")
     bert_col, w2v2_col = st.columns(2)
     with bert_col:
-        st.plotly_chart(px.imshow(bert_attn[bert_layer][bert_head][1:-1,1:-1]).add_traces([trace, trace_transpose]))
+        st.plotly_chart(px.imshow(bert_attn[bert_layer][bert_head][1:-1, 1:-1]).add_traces([trace, trace_transpose]))
     with w2v2_col:
-        st.plotly_chart(px.imshow(w2v2_attn[w2v2_layer][w2v2_head][1:-1,1:-1]).add_traces([trace, trace_transpose] ))
+        st.plotly_chart(px.imshow(w2v2_attn[w2v2_layer][w2v2_head][1:-1, 1:-1]).add_traces([trace, trace_transpose] ))
