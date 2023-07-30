@@ -22,7 +22,7 @@ class AttentionsDataCreator:
         self.model2_metadata = model2_metadata
         self.metric = metric
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric='Cosine')
+        self.analysis_generator = AnalysisGenerator(model1_metadata, model2_metadata, metric=metric)
         self.dataset = self.load_dummy_dataset() if use_dummy_dataset else self.load_dataset()
 
     def get_correlations_attentions_comparisons(self, sample1: Sample, sample2: Sample):

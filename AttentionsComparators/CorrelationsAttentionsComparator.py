@@ -33,6 +33,15 @@ class CorrelationsAttentionsComparator:
         H = attention_matrices2.shape[AttentionsConstants.HEAD_AXIS]
         correlations_attentions_comparisons = CorrelationsAttentionsComparisons(layers_model_1=L, heads_model_1=H,
                                                                                 layers_model_2=L, heads_model_2=H)
+        if self.correlation_analysis.metric in ['jaccard', 'jaccard_T']:
+            for l1 in range(L):
+                for h1 in range(H):
+                    matrix1 = attention_matrices1[l1][h1]
+                    matrix2 = attention_matrices2[l1][h1]
+
+                    attention_matrices1[l1][h1] = matrix1 > matrix1.mean() + 2 * matrix1.std()
+                    attention_matrices2[l1][h1] = matrix2 > matrix2.mean() + 2 * matrix2.std()
+
         for l1 in range(L):
             for h1 in range(H):
                 for l2 in range(L):

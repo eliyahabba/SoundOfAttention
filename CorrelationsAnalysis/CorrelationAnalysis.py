@@ -8,7 +8,7 @@ from CorrelationsAnalysis.JensenShannonDivergence import JensenShannonDivergence
 from CorrelationsAnalysis.KullbackLeiblerDivergence import KullbackLeiblerDivergence
 from CorrelationsAnalysis.PearsonCorrelation import PearsonCorrelation
 from CorrelationsAnalysis.TotalVariationDistance import TotalVariationDistance
-from CorrelationsAnalysis.BinaryCorrelation import JaccardSimCoeff
+from CorrelationsAnalysis.BinaryCorrelation import JaccardSimCoeff, JaccardSimCoeff_T
 
 class CorrelationAnalysis:
     def __init__(self, metric: str = 'Cosine',
@@ -47,6 +47,8 @@ class CorrelationAnalysis:
             return PearsonCorrelation
         elif metric == 'jaccard':
             return JaccardSimCoeff
+        elif metric == 'jaccard_T':
+            return JaccardSimCoeff_T
         else:
             raise ValueError(
                 "Invalid correlation metric. Supported options: 'KL', 'JS', 'Cosine', 'tot_var', 'pearson'")
