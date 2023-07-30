@@ -22,7 +22,9 @@ class AttentionExtractor:
         # Concat the tensors across all heads
         attentions = torch.cat(attentions, dim=0)
         # Convert the PyTorch tensor to a NumPy array
-        attentions = attentions.detach().numpy()
+        if attentions.is_cuda:
+            attentions = attentions.cpu()
+        attentions = attentions.numpy()
         return attentions
 
     def get_attention_matrix(self, model_outputs) -> Attentions:
