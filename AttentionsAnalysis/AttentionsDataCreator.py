@@ -33,7 +33,7 @@ class AttentionsDataCreator:
 
     def run(self):
         correlations = {}
-        for i in tqdm(range(len(self.dataset)-3, len(self.dataset))):
+        for i in tqdm(range(len(self.dataset))):
             sample1 = Sample(id=self.dataset[i]["id"], text=self.dataset[i]["text"], audio=self.dataset[i]["audio"])
             sample2 = sample1
             try:
