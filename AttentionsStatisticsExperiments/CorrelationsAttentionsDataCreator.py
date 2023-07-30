@@ -69,7 +69,7 @@ class AttentionsDataCreator:
             model_name1 = model_name1.replace('/', '')
         if '/' in model_name2:
             model_name2 = model_name2.replace('/', '')
-        path = f'correlations_for_{model_name1}_and_{model_name2}_{self.start_example}_{self.end_example}.pkl'
+        path = f'correlations_for_{model_name1}_and_{model_name2}_{self.start_example}_{self.end_example}_{self.metric}.pkl'
         with open(path, 'wb') as handle:
             pickle.dump(correlations, handle)
 
@@ -82,10 +82,9 @@ if __name__ == "__main__":
     parser.add_argument("--use_dummy_dataset", type=bool, default=False,
                         help="Whether to use a dummy dataset for the experiment")
     parser.add_argument("--start_example", type=int, default=0)
-    parser.add_argument("--end_example", type=int, default=400)
-    parser.add_argument("--metric", type=str, default='Cosine',
+    parser.add_argument("--end_example", type=int, default=2703)
+    parser.add_argument("--metric", type=str, default='jaccard',
                         help="Which metric to use")
-
     args = parser.parse_args()
 
     if args.experiment_name == "text_to_text":
