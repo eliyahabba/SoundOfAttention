@@ -8,8 +8,8 @@ from DataModels.Sample import Sample
 
 class CreateAttentionsData:
     @staticmethod
-    def create_attentions_data():
-        analysis_generator = get_analysis_generator(metric_name="Cosine", use_cls_and_sep=True)
+    def create_attentions_data(metric_name="Cosine", use_cls_and_sep=True):
+        analysis_generator = get_analysis_generator(metric_name=metric_name, use_cls_and_sep=use_cls_and_sep)
         dataset, tokenizer, _ = get_resources()
 
         data = list()
@@ -26,10 +26,11 @@ class CreateAttentionsData:
         return data
 
     @staticmethod
-    def save_attentions_data(data):
-        pd.to_pickle(data, "attentions_with_cls_and_sep.pkl")
+    def save_attentions_data(data, metric_name="Cosine", use_cls_and_sep=True):
+        use_special_tokens = "with_cls_and_sep" if use_cls_and_sep else "without_cls_and_sep"
+        pd.to_pickle(data, f'attentions_{use_special_tokens}_{metric_name}.pkl')
 
 
 if __name__ == '__main__':
-    data = CreateAttentionsData.create_attentions_data()
-    CreateAttentionsData.save_attentions_data(data)
+    data = CreateAttentionsData.create_attentions_data(metric_name="Cosine", use_cls_and_sep=True)
+    CreateAttentionsData.save_attentions_data(data, metric_name="Cosine", use_cls_and_sep=True)
