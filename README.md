@@ -6,6 +6,6 @@ We define a metric for correlation, compare attention layers, address alignment 
 Our user-friendly interface visually presents aligned attention matrices, aiding in model analysis and investigating those correlations.
 The paper concludes with potential linguistic and semantic realtions between those models, and with a method and metrics that can be applied for feature research.
 
-
+###
 ### Interactive Interface for Correlation Investigation
-![](streamlit_wo_sidebar.png)
+![](streamlit.png)
